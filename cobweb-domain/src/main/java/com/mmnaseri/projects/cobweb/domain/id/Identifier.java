@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/5/17, 7:12 PM)
  */
-public class Identifier<I extends Serializable> implements Serializable {
+public class Identifier<I extends Serializable & Comparable<I>> implements Serializable {
 
     private static final long serialVersionUID = 6647757186725575151L;
 

@@ -8,7 +8,7 @@ import java.util.Set;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/5/17, 7:12 PM)
  */
-public abstract class Document<I extends Serializable> extends Persistent<I> {
+public abstract class Document<I extends Serializable & Comparable<I>> extends Persistent<I> {
 
     private static final long serialVersionUID = -2921615765012084346L;
     private Set<Tag<I>> tags;

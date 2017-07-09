@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/5/17, 10:17 PM)
  */
-public class Tag<I extends Serializable> extends Persistent<I> {
+public class Tag<I extends Serializable & Comparable<I>> extends Persistent<I> {
 
     private static final long serialVersionUID = 2980693694492421432L;
 

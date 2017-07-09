@@ -7,7 +7,7 @@ import java.util.UUID;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/5/17, 7:15 PM)
  */
-public abstract class IdentifierFactory<I extends Serializable> {
+public abstract class IdentifierFactory<I extends Serializable & Comparable<I>> {
 
     private IdentifierFactory() {}
 
