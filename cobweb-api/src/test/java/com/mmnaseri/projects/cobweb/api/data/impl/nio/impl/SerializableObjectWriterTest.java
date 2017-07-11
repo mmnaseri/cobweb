@@ -31,7 +31,7 @@ public class SerializableObjectWriterTest {
 
     @Test
     public void testWritingObject() throws Exception {
-        final SerializableObjectWriter writer = new SerializableObjectWriter();
+        final SerializableObjectWriter<String> writer = new SerializableObjectWriter<>();
         final String written = "This is a test";
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         assertThat(Files.exists(path), is(false));

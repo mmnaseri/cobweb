@@ -12,7 +12,7 @@ public class SerializableObjectInputOutputManagerTest extends BaseObjectInputOut
 
     @Override
     protected ObjectInputOutputManager<Serializable> getManager() {
-        return new SerializableObjectInputOutputManager();
+        return new SerializableObjectInputOutputManager<>();
     }
 
     @Override

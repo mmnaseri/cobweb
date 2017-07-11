@@ -10,18 +10,18 @@ import java.io.Serializable;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:43 PM)
  */
-public class SerializableObjectInputOutputManager implements ObjectInputOutputManager<Serializable> {
+public class SerializableObjectInputOutputManager<I extends Serializable> implements ObjectInputOutputManager<I> {
 
-    private final ObjectReader<Serializable> objectReader = new SerializableObjectReader();
-    private final ObjectWriter<Serializable> objectWriter = new SerializableObjectWriter();
+    private final ObjectReader<I> objectReader = new SerializableObjectReader<>();
+    private final ObjectWriter<I> objectWriter = new SerializableObjectWriter<>();
 
     @Override
-    public ObjectReader<Serializable> getObjectReader() {
+    public ObjectReader<I> getObjectReader() {
         return objectReader;
     }
 
     @Override
-    public ObjectWriter<Serializable> getObjectWriter() {
+    public ObjectWriter<I> getObjectWriter() {
         return objectWriter;
     }
 

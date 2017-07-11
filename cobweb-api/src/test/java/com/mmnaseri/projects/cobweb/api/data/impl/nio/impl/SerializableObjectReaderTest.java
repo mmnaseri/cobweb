@@ -34,7 +34,7 @@ public class SerializableObjectReaderTest {
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         final ObjectOutputStream stream = new ObjectOutputStream(Files.newOutputStream(path));
         stream.writeObject(written);
-        final SerializableObjectReader reader = new SerializableObjectReader();
+        final SerializableObjectReader<String> reader = new SerializableObjectReader<>();
         final String read = reader.read(path, String.class);
         assertThat(read, is(written));
     }

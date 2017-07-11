@@ -13,10 +13,10 @@ import java.nio.file.StandardOpenOption;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:30 PM)
  */
-public class SerializableObjectReader implements ObjectReader<Serializable> {
+public class SerializableObjectReader<O extends Serializable> implements ObjectReader<O> {
 
     @Override
-    public <I extends Serializable> I read(Path path, Class<I> type) throws IOException {
+    public <I extends O> I read(Path path, Class<I> type) throws IOException {
         final Object object;
         try (final ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(path, StandardOpenOption.READ))) {
             try {

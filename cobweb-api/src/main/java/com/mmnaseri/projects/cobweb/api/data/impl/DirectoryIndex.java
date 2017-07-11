@@ -2,15 +2,15 @@ package com.mmnaseri.projects.cobweb.api.data.impl;
 
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.data.Index;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.data.impl.nio.ObjectInputOutputManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -19,9 +19,10 @@ import java.util.stream.Collectors;
 public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Serializable> implements Index<I, V> {
 
     private final Path root;
-    private final ObjectInputOutputManager ioManager;
+    private final ObjectInputOutputManager<V> ioManager;
 
-    public DirectoryIndex(Path root, ObjectInputOutputManager ioManager) {
+    public DirectoryIndex(Path root, ObjectInputOutputManager<V> ioManager) throws IOException {
+        Files.createDirectories(root);
         this.root = root;
         this.ioManager = ioManager;
     }
@@ -33,7 +34,7 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
 
     @Override
     public boolean has(I key) {
-        return getFile(key).exists();
+        return Files.exists(getPath(key));
     }
 
     @Override
@@ -43,7 +44,11 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
 
     @Override
     public boolean delete(I key) {
-        return has(key) && getFile(key).delete();
+        try {
+            return has(key) && Files.deleteIfExists(getPath(key));
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override
@@ -64,48 +69,52 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
 
     @Override
     public List<V> all() {
-        final File[] files = getFiles();
-        return Arrays.stream(files)
-                .map(this::read)
-                .collect(Collectors.toList());
+        return list().map(this::read).collect(Collectors.toList());
     }
 
     @Override
     public long count() {
-        return getFiles().length;
+        return list().count();
     }
 
     @Override
     public void truncate() {
-        final Boolean allFilesDeleted = Arrays.stream(getFiles())
-                .map(File::delete)
-                .reduce(Boolean::logicalAnd)
+        final Boolean allFilesDeleted = list().map(this::deleteFile)
+                .reduce(Boolean::logicalOr)
                 .orElse(Boolean.TRUE);
         if (!allFilesDeleted) {
             throw new IllegalStateException();
         }
     }
 
-    private File[] getFiles() {
-        final File file = root.toFile();
-        if (file == null || !file.isDirectory()) {
-            throw new IllegalStateException();
+    private Boolean deleteFile(Path path) {
+        try {
+            return Files.deleteIfExists(path);
+        } catch (IOException e) {
+            return false;
         }
-        return file.listFiles(pathname -> !pathname.getName().startsWith("."));
     }
 
-    private File getFile(I key) {
-        return root.resolve(String.valueOf(key)).toFile();
+    private Stream<Path> list() {
+        try {
+            return Files.list(root);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to list contents of " + root);
+        }
+    }
+
+    private Path getPath(I key) {
+        return root.resolve(String.valueOf(key));
     }
 
     private V read(I key) throws IOException {
-        return ioManager.getReader().read(getFile(key), new ParameterizedTypeReference<V>() {
+        return ioManager.getObjectReader().read(getPath(key), new ParameterizedTypeReference<V>() {
         });
     }
 
-    private V read(File file) {
+    private V read(Path path) {
         try {
-            return ioManager.getReader().read(file, new ParameterizedTypeReference<V>() {
+            return ioManager.getObjectReader().read(path, new ParameterizedTypeReference<V>() {
             });
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -113,7 +122,7 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
     }
 
     private void write(I key, V value) throws IOException {
-        ioManager.getWriter().write(getFile(key), value);
+        ioManager.getObjectWriter().write(getPath(key), value);
     }
 
 }

@@ -3,8 +3,10 @@ package com.mmnaseri.projects.cobweb.api.data.impl.nio;
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 
 import java.io.IOException;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.nio.file.Path;
 
 /**
@@ -19,9 +21,12 @@ public interface ObjectReader<O> {
     default <I extends O> I read(Path path, Type type) throws IOException {
         final Class<?> clazz;
         if (type instanceof Class<?>) {
-            clazz = (Class) type;
+            clazz = (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
             clazz = (Class<?>) ((ParameterizedType) type).getRawType();
+        } else if (type instanceof TypeVariable) {
+            final AnnotatedType[] bounds = ((TypeVariable) type).getAnnotatedBounds();
+            clazz = (Class<?>) bounds[0].getType();
         } else {
             throw new IOException("Invalid type for expected object: " + type);
         }

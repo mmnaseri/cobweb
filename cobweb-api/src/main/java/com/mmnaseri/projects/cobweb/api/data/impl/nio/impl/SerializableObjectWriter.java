@@ -14,10 +14,10 @@ import java.nio.file.StandardOpenOption;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:07 PM)
  */
-public class SerializableObjectWriter implements ObjectWriter<Serializable> {
+public class SerializableObjectWriter<O extends Serializable> implements ObjectWriter<O> {
 
     @Override
-    public void write(Path path, Serializable object) throws IOException {
+    public void write(Path path, O object) throws IOException {
         try (
                 final OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
                 final ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
