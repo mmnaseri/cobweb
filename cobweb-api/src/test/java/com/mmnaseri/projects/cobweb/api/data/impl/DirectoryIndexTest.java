@@ -27,7 +27,11 @@ public class DirectoryIndexTest extends BaseIndexTest {
     protected Index<UUID, SerializableDocument> setUpIndex() throws Exception {
         final FileSystem fileSystem = Jimfs.newFileSystem();
         root = FileSystemUtils.getAbsolutePath(fileSystem, "data", "index");
-        return new DirectoryIndex<>(root, new SerializableObjectInputOutputManager<>());
+        final DirectoryIndexFactory factory = new DirectoryIndexFactory();
+        final DirectoryIndexConfiguration<SerializableDocument> manager = DirectoryIndexConfiguration
+                .<SerializableDocument>withRootPath(root)
+                .andIOManager(new SerializableObjectInputOutputManager<>());
+        return factory.getInstance(manager);
     }
 
     @Test
