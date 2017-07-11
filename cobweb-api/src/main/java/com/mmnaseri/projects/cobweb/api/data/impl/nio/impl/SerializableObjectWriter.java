@@ -19,8 +19,8 @@ public class SerializableObjectWriter<O extends Serializable> implements ObjectW
     @Override
     public void write(Path path, O object) throws IOException {
         try (
-                final OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-                final ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
         ) {
             objectOutputStream.writeObject(object);
         }
