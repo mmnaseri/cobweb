@@ -4,8 +4,6 @@ import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
 import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
 import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
 
-import java.io.Serializable;
-
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:43 PM)

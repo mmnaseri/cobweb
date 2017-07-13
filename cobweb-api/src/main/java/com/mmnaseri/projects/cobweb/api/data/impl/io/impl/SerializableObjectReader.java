@@ -4,7 +4,6 @@ import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
