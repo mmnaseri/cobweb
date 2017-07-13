@@ -1,8 +1,8 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
+package com.mmnaseri.projects.cobweb.api.io.impl;
 
 import com.google.common.jimfs.Jimfs;
 import com.mmnaseri.projects.cobweb.api.common.FileSystemUtils;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
+import com.mmnaseri.projects.cobweb.api.io.ObjectWriter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -10,16 +10,15 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
- * @since 1.0 (7/12/17, 6:00 PM)
+ * @since 1.0 (7/12/17, 6:04 PM)
  */
-public abstract class BaseObjectReaderTest {
+public abstract class BaseObjectWriterTest {
 
     private FileSystem fileSystem;
 
@@ -31,17 +30,19 @@ public abstract class BaseObjectReaderTest {
     }
 
     @Test
-    public void testReadingAnObject() throws Exception {
+    public void testWritingObject() throws Exception {
+        final ObjectWriter writer = getObjectWriter();
+        final String written = "This is a test";
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
-        final String written = UUID.randomUUID().toString();
-        write(path, written);
-        final ObjectReader reader = getObjectReader();
-        final String read = reader.read(path, String.class);
+        assertThat(Files.exists(path), is(false));
+        writer.write(path, written);
+        assertThat(Files.exists(path), is(true));
+        final Object read = read(path);
         assertThat(read, is(written));
     }
 
-    protected abstract ObjectReader getObjectReader();
+    protected abstract ObjectWriter getObjectWriter();
 
-    protected abstract void write(Path path, String written) throws IOException;
+    protected abstract Object read(Path path) throws IOException, ClassNotFoundException;
 
 }

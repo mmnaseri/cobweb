@@ -1,8 +1,8 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
+package com.mmnaseri.projects.cobweb.api.io.impl;
 
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
+import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.io.ObjectReader;
+import com.mmnaseri.projects.cobweb.api.io.ObjectWriter;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)

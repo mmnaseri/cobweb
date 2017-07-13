@@ -1,4 +1,4 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io;
+package com.mmnaseri.projects.cobweb.api.io;
 
 import java.io.Serializable;
 

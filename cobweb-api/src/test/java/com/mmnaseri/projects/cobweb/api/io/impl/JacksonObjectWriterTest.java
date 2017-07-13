@@ -1,7 +1,7 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
+package com.mmnaseri.projects.cobweb.api.io.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
+import com.mmnaseri.projects.cobweb.api.io.ObjectWriter;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.IOException;

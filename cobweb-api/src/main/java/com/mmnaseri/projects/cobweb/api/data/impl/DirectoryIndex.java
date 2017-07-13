@@ -3,7 +3,7 @@ package com.mmnaseri.projects.cobweb.api.data.impl;
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.data.Index;
 import com.mmnaseri.projects.cobweb.api.data.Stringifier;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
 
 import java.io.IOException;
 import java.io.Serializable;

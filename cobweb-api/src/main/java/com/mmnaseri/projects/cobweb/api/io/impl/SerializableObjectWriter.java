@@ -1,6 +1,6 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
+package com.mmnaseri.projects.cobweb.api.io.impl;
 
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
+import com.mmnaseri.projects.cobweb.api.io.ObjectWriter;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

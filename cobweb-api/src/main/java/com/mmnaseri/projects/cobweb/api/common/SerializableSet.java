@@ -13,7 +13,7 @@ import java.util.Set;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 8:57 PM)
  */
-public class SerializableSet<K extends Serializable> implements Set<K>, Serializable {
+public class SerializableSet<K extends Serializable> implements Set<K>, Serializable, Bag<K> {
 
     private static final long serialVersionUID = 5890685226279882633L;
     private Set<K> set;
@@ -38,6 +38,11 @@ public class SerializableSet<K extends Serializable> implements Set<K>, Serializ
     @Override
     public boolean isEmpty() {
         return set.isEmpty();
+    }
+
+    @Override
+    public Collection<K> values() {
+        return this;
     }
 
     @Override

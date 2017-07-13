@@ -13,7 +13,7 @@ import java.util.Set;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 8:51 PM)
  */
-public class SerializableMap<K extends Serializable, V extends Serializable> implements Map<K, V>, Serializable {
+public class SerializableMap<K extends Serializable, V extends Serializable> implements Map<K, V>, Serializable, Bag<V> {
 
     private static final long serialVersionUID = -3304814197248864075L;
     private Map<K, V> map;

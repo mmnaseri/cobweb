@@ -11,7 +11,6 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
 
     private static final long serialVersionUID = 2149521879563062235L;
     private String mime;
-    private String path;
     private Set<Document<I>> anchors;
 
     public String getMime() {
@@ -20,14 +19,6 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
 
     public void setMime(String mime) {
         this.mime = mime;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
     }
 
     public Set<Document<I>> getAnchors() {

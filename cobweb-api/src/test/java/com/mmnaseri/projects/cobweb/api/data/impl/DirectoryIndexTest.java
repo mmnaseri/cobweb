@@ -3,7 +3,7 @@ package com.mmnaseri.projects.cobweb.api.data.impl;
 import com.google.common.jimfs.Jimfs;
 import com.mmnaseri.projects.cobweb.api.common.FileSystemUtils;
 import com.mmnaseri.projects.cobweb.api.data.Index;
-import com.mmnaseri.projects.cobweb.api.data.impl.io.impl.SerializableObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.io.impl.SerializableObjectInputOutputManager;
 import com.mmnaseri.projects.cobweb.api.data.model.SerializableDocument;
 import org.testng.annotations.Test;
 

@@ -1,6 +1,6 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
+package com.mmnaseri.projects.cobweb.api.io.impl;
 
-import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
 
 import java.io.Serializable;
 
