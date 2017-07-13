@@ -1,47 +1,36 @@
 package com.mmnaseri.projects.cobweb.api.data.impl;
 
+import com.mmnaseri.projects.cobweb.api.data.Dictionary;
 import com.mmnaseri.projects.cobweb.api.data.Index;
 import com.mmnaseri.projects.cobweb.api.data.model.SerializableDocument;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 7:58 PM)
  */
-public abstract class BaseIndexTest {
+public abstract class BaseIndexTest extends BaseDictionaryTest {
 
     private Index<UUID, SerializableDocument> index;
 
-    @BeforeMethod
-    public void setUp() throws Exception {
+    @Override
+    protected final Dictionary<UUID> setUpDictionary() throws Exception {
         index = setUpIndex();
-    }
-
-    protected Index<UUID, SerializableDocument> getIndex() {
         return index;
     }
 
-    protected abstract Index<UUID, SerializableDocument> setUpIndex() throws Exception;
-
-    @Test
-    public void testThatIndexIsInitiallyEmpty() throws Exception {
-        assertThat(index.count(), is(0L));
+    Index<UUID, SerializableDocument> getIndex() {
+        return index;
     }
 
-    @Test
-    public void testThatIndexRemembersWhatItHas() throws Exception {
-        final UUID key = UUID.randomUUID();
-        final SerializableDocument value = new SerializableDocument(key);
-        assertThat(index.has(key), is(false));
-        index.store(key, value);
-        assertThat(index.has(key), is(true));
-    }
+    protected abstract Index<UUID,SerializableDocument> setUpIndex() throws Exception;
 
     @Test
     public void testThatUpdatingNonExistentKeyDoesNothing() throws Exception {
@@ -67,17 +56,6 @@ public abstract class BaseIndexTest {
         assertThat(index.count(), is(2L));
         assertThat(index.has(secondKey), is(true));
         assertThat(index.get(secondKey), is(secondValue));
-    }
-
-    @Test
-    public void testThatDeletingNonExistentKeysDoesNothing() throws Exception {
-        final UUID key = UUID.randomUUID();
-        final SerializableDocument value = new SerializableDocument(key);
-        assertThat(index.count(), is(0L));
-        index.store(key, value);
-        assertThat(index.count(), is(1L));
-        assertThat(index.delete(UUID.randomUUID()), is(false));
-        assertThat(index.count(), is(1L));
     }
 
     @Test
@@ -117,15 +95,15 @@ public abstract class BaseIndexTest {
     }
 
     @Test
-    public void testTruncatingIndexZeroesIt() throws Exception {
-        final long size = 10L;
-        for (long i = 0L; i < size; i++) {
-            final UUID key = UUID.randomUUID();
-            index.store(key, new SerializableDocument(key));
-        }
-        assertThat(index.count(), is(size));
-        index.truncate();
-        assertThat(index.count(), is(0L));
+    public void testValuesAreKnown() throws Exception {
+        final UUID firstKey = UUID.randomUUID();
+        final SerializableDocument firstValue = new SerializableDocument(firstKey);
+        final UUID secondKey = UUID.randomUUID();
+        final SerializableDocument secondValue = new SerializableDocument(secondKey);
+        index.store(firstKey, firstValue);
+        index.store(secondKey, secondValue);
+        final List<SerializableDocument> values = index.values();
+        assertThat(values, containsInAnyOrder(firstValue, secondValue));
     }
 
 }

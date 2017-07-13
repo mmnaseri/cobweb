@@ -2,7 +2,8 @@ package com.mmnaseri.projects.cobweb.api.data.impl;
 
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.data.Index;
-import com.mmnaseri.projects.cobweb.api.data.impl.nio.ObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.data.Stringifier;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectInputOutputManager;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -16,34 +17,45 @@ import java.util.stream.Stream;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/8/17, 8:04 PM)
  */
-public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Serializable> implements Index<I, V> {
+public class DirectoryIndex<K extends Serializable & Comparable<K>, V extends Serializable> implements Index<K, V> {
 
     private final Path root;
+    private final Stringifier<K> stringifier;
     private final ObjectInputOutputManager<V> ioManager;
 
-    public DirectoryIndex(Path root, ObjectInputOutputManager<V> ioManager) throws IOException {
+    public DirectoryIndex(Path root, Stringifier<K> stringifier, ObjectInputOutputManager<V> ioManager) throws IOException {
+        this.stringifier = stringifier;
         Files.createDirectories(root);
         this.root = root;
         this.ioManager = ioManager;
     }
 
     @Override
-    public void store(I key, V value) throws IOException {
+    public boolean store(K key, V value) throws IOException {
+        if (has(key)) {
+            return false;
+        }
         write(key, value);
+        return true;
     }
 
     @Override
-    public boolean has(I key) {
+    public boolean store(K key) throws IOException {
+        return store(key, null);
+    }
+
+    @Override
+    public boolean has(K key) {
         return Files.exists(getPath(key));
     }
 
     @Override
-    public V get(I key) throws IOException {
+    public V get(K key) throws IOException {
         return read(key);
     }
 
     @Override
-    public boolean delete(I key) {
+    public boolean delete(K key) {
         try {
             return has(key) && Files.deleteIfExists(getPath(key));
         } catch (IOException e) {
@@ -52,7 +64,7 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
     }
 
     @Override
-    public boolean update(I key, V value) throws IOException {
+    public boolean update(K key, V value) throws IOException {
         if (!has(key)) {
             return false;
         }
@@ -62,13 +74,13 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
     }
 
     @Override
-    public boolean upsert(I key, V value) throws IOException {
+    public boolean upsert(K key, V value) throws IOException {
         write(key, value);
         return true;
     }
 
     @Override
-    public List<V> all() {
+    public List<V> values() {
         return list().map(this::read).collect(Collectors.toList());
     }
 
@@ -87,6 +99,15 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
         }
     }
 
+    @Override
+    public List<K> keys() {
+        return list()
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .map(stringifier::fromString)
+                .collect(Collectors.toList());
+    }
+
     private Boolean deleteFile(Path path) {
         try {
             return Files.deleteIfExists(path);
@@ -103,11 +124,11 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
         }
     }
 
-    private Path getPath(I key) {
-        return root.resolve(String.valueOf(key));
+    private Path getPath(K key) {
+        return root.resolve(stringifier.toString(key));
     }
 
-    private V read(I key) throws IOException {
+    private V read(K key) throws IOException {
         return ioManager.getObjectReader().read(getPath(key), new ParameterizedTypeReference<V>() {
         });
     }
@@ -121,7 +142,7 @@ public class DirectoryIndex<I extends Serializable & Comparable<I>, V extends Se
         }
     }
 
-    private void write(I key, V value) throws IOException {
+    private void write(K key, V value) throws IOException {
         ioManager.getObjectWriter().write(getPath(key), value);
     }
 

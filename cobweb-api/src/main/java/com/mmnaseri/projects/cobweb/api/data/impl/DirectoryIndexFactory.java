@@ -16,7 +16,7 @@ public class DirectoryIndexFactory implements IndexFactory<DirectoryIndexConfigu
     public <I extends Serializable & Comparable<I>, V extends Serializable> Index<I, V> getInstance(DirectoryIndexConfiguration configuration) {
         try {
             //noinspection unchecked
-            return new DirectoryIndex<I, V>(configuration.getRoot(), configuration.getObjectInputOutputManager());
+            return new DirectoryIndex<I, V>(configuration.getRoot(), configuration.getStringifier(), configuration.getObjectInputOutputManager());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

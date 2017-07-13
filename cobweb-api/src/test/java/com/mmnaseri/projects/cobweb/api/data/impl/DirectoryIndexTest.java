@@ -3,7 +3,7 @@ package com.mmnaseri.projects.cobweb.api.data.impl;
 import com.google.common.jimfs.Jimfs;
 import com.mmnaseri.projects.cobweb.api.common.FileSystemUtils;
 import com.mmnaseri.projects.cobweb.api.data.Index;
-import com.mmnaseri.projects.cobweb.api.data.impl.nio.impl.SerializableObjectInputOutputManager;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.impl.SerializableObjectInputOutputManager;
 import com.mmnaseri.projects.cobweb.api.data.model.SerializableDocument;
 import org.testng.annotations.Test;
 
@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
+import static com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration.forIndexType;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -28,9 +29,12 @@ public class DirectoryIndexTest extends BaseIndexTest {
         final FileSystem fileSystem = Jimfs.newFileSystem();
         root = FileSystemUtils.getAbsolutePath(fileSystem, "data", "index");
         final DirectoryIndexFactory factory = new DirectoryIndexFactory();
-        final DirectoryIndexConfiguration<SerializableDocument> manager = DirectoryIndexConfiguration
-                .<SerializableDocument>withRootPath(root)
-                .andIOManager(new SerializableObjectInputOutputManager<>());
+        final DirectoryIndexConfiguration<UUID, SerializableDocument> manager = forIndexType(UUID.class, SerializableDocument.class)
+                .andRootPath(root)
+                .andIOManager(new SerializableObjectInputOutputManager<>())
+                .andStringifier(new UUIDStringifier())
+                .build();
+
         return factory.getInstance(manager);
     }
 

@@ -1,4 +1,4 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.nio;
+package com.mmnaseri.projects.cobweb.api.data.impl.io;
 
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 

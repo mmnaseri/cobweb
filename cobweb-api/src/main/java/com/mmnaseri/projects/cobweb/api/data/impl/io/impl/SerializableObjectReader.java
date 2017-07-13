@@ -1,6 +1,6 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.nio.impl;
+package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
 
-import com.mmnaseri.projects.cobweb.api.data.impl.nio.ObjectReader;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,7 +25,7 @@ public class SerializableObjectReader<O extends Serializable> implements ObjectR
                 throw new IOException("Unknown object type found in stream", e);
             }
         }
-        if (!type.isInstance(object)) {
+        if (object != null && !type.isInstance(object)) {
             throw new IOException("Expected object of type " + type + " but found " + object);
         }
         //noinspection unchecked

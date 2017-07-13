@@ -1,23 +1,25 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.nio.impl;
+package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
 
 import com.google.common.jimfs.Jimfs;
 import com.mmnaseri.projects.cobweb.api.common.FileSystemUtils;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.ObjectOutputStream;
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
- * @since 1.0 (7/10/17, 6:32 PM)
+ * @since 1.0 (7/12/17, 6:00 PM)
  */
-public class SerializableObjectReaderTest {
+public abstract class BaseObjectReaderTest {
 
     private FileSystem fileSystem;
 
@@ -30,13 +32,16 @@ public class SerializableObjectReaderTest {
 
     @Test
     public void testReadingAnObject() throws Exception {
-        final String written = "This is a test";
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
-        final ObjectOutputStream stream = new ObjectOutputStream(Files.newOutputStream(path));
-        stream.writeObject(written);
-        final SerializableObjectReader<String> reader = new SerializableObjectReader<>();
+        final String written = UUID.randomUUID().toString();
+        write(path, written);
+        final ObjectReader<String> reader = getObjectReader();
         final String read = reader.read(path, String.class);
         assertThat(read, is(written));
     }
+
+    protected abstract ObjectReader<String> getObjectReader();
+
+    protected abstract void write(Path path, String written) throws IOException;
 
 }

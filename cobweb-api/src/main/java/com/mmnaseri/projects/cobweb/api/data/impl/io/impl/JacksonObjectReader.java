@@ -1,7 +1,7 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.nio.impl;
+package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mmnaseri.projects.cobweb.api.data.impl.nio.ObjectReader;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectReader;
 
 import java.io.IOException;
 import java.nio.file.Files;

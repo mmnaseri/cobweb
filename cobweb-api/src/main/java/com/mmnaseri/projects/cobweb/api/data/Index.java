@@ -8,24 +8,16 @@ import java.util.List;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/8/17, 7:51 PM)
  */
-public interface Index<I extends Serializable & Comparable<I>, V extends Serializable> {
+public interface Index<K extends Serializable & Comparable<K>, V extends Serializable> extends Dictionary<K> {
 
-    void store(I key, V value) throws IOException;
+    boolean store(K key, V value) throws IOException;
 
-    boolean has(I key);
+    V get(K key) throws IOException;
 
-    V get(I key) throws IOException;
+    boolean update(K key, V value) throws IOException;
 
-    boolean delete(I key);
+    boolean upsert(K key, V value) throws IOException;
 
-    boolean update(I key, V value) throws IOException;
-
-    boolean upsert(I key, V value) throws IOException;
-
-    List<V> all();
-
-    long count();
-
-    void truncate();
+    List<V> values();
 
 }

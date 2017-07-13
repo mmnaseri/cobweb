@@ -1,24 +1,24 @@
-package com.mmnaseri.projects.cobweb.api.data.impl.nio.impl;
+package com.mmnaseri.projects.cobweb.api.data.impl.io.impl;
 
 import com.google.common.jimfs.Jimfs;
 import com.mmnaseri.projects.cobweb.api.common.FileSystemUtils;
+import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
- * @since 1.0 (7/10/17, 6:09 PM)
+ * @since 1.0 (7/12/17, 6:04 PM)
  */
-public class SerializableObjectWriterTest {
+public abstract class BaseObjectWriterTest {
 
     private FileSystem fileSystem;
 
@@ -31,19 +31,18 @@ public class SerializableObjectWriterTest {
 
     @Test
     public void testWritingObject() throws Exception {
-        final SerializableObjectWriter<String> writer = new SerializableObjectWriter<>();
+        final ObjectWriter<String> writer = getObjectWriter();
         final String written = "This is a test";
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         assertThat(Files.exists(path), is(false));
         writer.write(path, written);
         assertThat(Files.exists(path), is(true));
-        final Object read;
-        try (
-                final ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(path, StandardOpenOption.READ))
-        ) {
-            read = stream.readObject();
-        }
+        final Object read = read(path);
         assertThat(read, is(written));
     }
+
+    protected abstract ObjectWriter<String> getObjectWriter();
+
+    protected abstract Object read(Path path) throws IOException, ClassNotFoundException;
 
 }
