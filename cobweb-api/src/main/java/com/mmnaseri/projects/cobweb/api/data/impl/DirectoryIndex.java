@@ -56,12 +56,8 @@ public class DirectoryIndex<K extends Serializable & Comparable<K>, V extends Se
     }
 
     @Override
-    public boolean delete(K key) {
-        try {
-            return has(key) && Files.deleteIfExists(getPath(key));
-        } catch (IOException e) {
-            return false;
-        }
+    public boolean delete(K key) throws IOException {
+        return has(key) && Files.deleteIfExists(getPath(key));
     }
 
     @Override

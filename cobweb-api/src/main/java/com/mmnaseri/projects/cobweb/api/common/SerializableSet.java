@@ -18,6 +18,10 @@ public class SerializableSet<K extends Serializable> implements Set<K>, Serializ
     private static final long serialVersionUID = 5890685226279882633L;
     private Set<K> set;
 
+    public static <K extends Serializable> SerializableSet<K> create(K sample) {
+        return new SerializableSet<>();
+    }
+
     public SerializableSet() {
         this(new HashSet<>());
     }

@@ -14,7 +14,7 @@ public interface Dictionary<K extends Serializable & Comparable<K>> extends Seri
 
     boolean has(K key);
 
-    boolean delete(K key);
+    boolean delete(K key) throws IOException;
 
     long count();
 
