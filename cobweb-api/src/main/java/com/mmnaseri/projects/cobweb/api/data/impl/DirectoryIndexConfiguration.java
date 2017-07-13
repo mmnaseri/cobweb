@@ -12,13 +12,15 @@ import java.nio.file.Path;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 8:07 PM)
  */
-public class DirectoryIndexConfiguration<K extends Serializable & Comparable<K>, V> implements IndexConfiguration {
+@SuppressWarnings("WeakerAccess")
+public class DirectoryIndexConfiguration<K extends Serializable & Comparable<K>> implements IndexConfiguration {
 
+    private static final long serialVersionUID = 8454706386779973786L;
     private final Path root;
-    private final ObjectInputOutputManager<V> objectInputOutputManager;
+    private final ObjectInputOutputManager objectInputOutputManager;
     private final Stringifier<K> stringifier;
 
-    private DirectoryIndexConfiguration(Path root, ObjectInputOutputManager<V> objectInputOutputManager, Stringifier<K> stringifier) {
+    private DirectoryIndexConfiguration(Path root, ObjectInputOutputManager objectInputOutputManager, Stringifier<K> stringifier) {
         this.root = root;
         this.objectInputOutputManager = objectInputOutputManager;
         this.stringifier = stringifier;
@@ -28,7 +30,7 @@ public class DirectoryIndexConfiguration<K extends Serializable & Comparable<K>,
         return root;
     }
 
-    public ObjectInputOutputManager<V> getObjectInputOutputManager() {
+    public ObjectInputOutputManager getObjectInputOutputManager() {
         return objectInputOutputManager;
     }
 
@@ -36,38 +38,39 @@ public class DirectoryIndexConfiguration<K extends Serializable & Comparable<K>,
         return stringifier;
     }
 
-    public static <K extends Serializable & Comparable<K>, V> RootPathConfigurer<K, V> forIndexType(Class<K> keyType, Class<V> valueType) {
-        return forIndexType(new ParameterizedTypeReference<K>() {
-        }, new ParameterizedTypeReference<V>() {
+    @SuppressWarnings("unused")
+    public static <K extends Serializable & Comparable<K>> RootPathConfigurer<K> forKeyType(Class<K> keyType) {
+        return forKeyType(new ParameterizedTypeReference<K>() {
         });
     }
 
-    public static <K extends Serializable & Comparable<K>, V> RootPathConfigurer<K, V> forIndexType(ParameterizedTypeReference<K> keyType, ParameterizedTypeReference<V> valueType) {
+    @SuppressWarnings("unused")
+    public static <K extends Serializable & Comparable<K>, V> RootPathConfigurer<K> forKeyType(ParameterizedTypeReference<K> keyType) {
         return path -> inputOutputManager -> stringifier -> () ->
                 new DirectoryIndexConfiguration<>(path, inputOutputManager, stringifier);
     }
 
-    public interface RootPathConfigurer<K extends Serializable & Comparable<K>, V> {
+    public interface RootPathConfigurer<K extends Serializable & Comparable<K>> {
 
-        IOManagerConfigurer<K, V> andRootPath(Path path);
-
-    }
-
-    public interface IOManagerConfigurer<K extends Serializable & Comparable<K>, V> {
-
-        StringifierConfigurer<K, V> andIOManager(ObjectInputOutputManager<V> inputOutputManager);
+        IOManagerConfigurer<K> andRootPath(Path path);
 
     }
 
-    public interface StringifierConfigurer<K extends Serializable & Comparable<K>, V> {
+    public interface IOManagerConfigurer<K extends Serializable & Comparable<K>> {
 
-        DirectoryIndexConfigurationBuilder<K, V> andStringifier(Stringifier<K> stringifier);
+        StringifierConfigurer<K> andIOManager(ObjectInputOutputManager inputOutputManager);
 
     }
 
-    public interface DirectoryIndexConfigurationBuilder<K extends Serializable & Comparable<K>, V> {
+    public interface StringifierConfigurer<K extends Serializable & Comparable<K>> {
 
-        DirectoryIndexConfiguration<K, V> build();
+        DirectoryIndexConfigurationBuilder<K> andStringifier(Stringifier<K> stringifier);
+
+    }
+
+    public interface DirectoryIndexConfigurationBuilder<K extends Serializable & Comparable<K>> {
+
+        DirectoryIndexConfiguration<K> build();
 
     }
 

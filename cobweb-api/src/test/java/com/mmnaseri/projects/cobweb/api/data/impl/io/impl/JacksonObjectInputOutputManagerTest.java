@@ -9,11 +9,11 @@ import java.util.UUID;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 2:14 AM)
  */
-public class JacksonObjectInputOutputManagerTest extends BaseObjectInputOutputManagerTest<Object> {
+public class JacksonObjectInputOutputManagerTest extends BaseObjectInputOutputManagerTest {
 
     @Override
-    protected ObjectInputOutputManager<Object> getManager() {
-        return new JacksonObjectInputOutputManager<>(new ObjectMapper());
+    protected ObjectInputOutputManager getManager() {
+        return new JacksonObjectInputOutputManager(new ObjectMapper());
     }
 
     @Override

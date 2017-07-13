@@ -1,6 +1,7 @@
 package com.mmnaseri.projects.cobweb.domain.content;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -11,6 +12,7 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
     private static final long serialVersionUID = 2149521879563062235L;
     private String mime;
     private String path;
+    private Set<Document<I>> anchors;
 
     public String getMime() {
         return mime;
@@ -26,6 +28,14 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Set<Document<I>> getAnchors() {
+        return anchors;
+    }
+
+    public void setAnchors(Set<Document<I>> anchors) {
+        this.anchors = anchors;
     }
 
 }

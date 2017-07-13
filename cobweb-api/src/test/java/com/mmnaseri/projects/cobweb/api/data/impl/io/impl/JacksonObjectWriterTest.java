@@ -23,8 +23,8 @@ public class JacksonObjectWriterTest extends BaseObjectWriterTest {
     }
 
     @Override
-    protected ObjectWriter<String> getObjectWriter() {
-        return new JacksonObjectWriter<>(objectMapper);
+    protected ObjectWriter getObjectWriter() {
+        return new JacksonObjectWriter(objectMapper);
     }
 
     @Override

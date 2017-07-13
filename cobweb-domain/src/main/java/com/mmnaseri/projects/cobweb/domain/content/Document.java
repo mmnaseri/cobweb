@@ -13,7 +13,7 @@ public abstract class Document<I extends Serializable & Comparable<I>> extends P
     private static final long serialVersionUID = -2921615765012084346L;
     private Set<Tag<I>> tags;
     private Map<String, Attachment<I>> attachments;
-    private Map<String, Object> properties;
+    private DocumentProperties properties;
 
     public Set<Tag<I>> getTags() {
         return tags;
@@ -31,11 +31,11 @@ public abstract class Document<I extends Serializable & Comparable<I>> extends P
         this.attachments = attachments;
     }
 
-    public Map<String, Object> getProperties() {
+    public DocumentProperties getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
+    public void setProperties(DocumentProperties properties) {
         this.properties = properties;
     }
 

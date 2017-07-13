@@ -9,23 +9,24 @@ import com.mmnaseri.projects.cobweb.api.data.impl.io.ObjectWriter;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 2:11 AM)
  */
-public class JacksonObjectInputOutputManager<O> implements ObjectInputOutputManager<O> {
+public class JacksonObjectInputOutputManager implements ObjectInputOutputManager {
 
-    private final JacksonObjectReader<O> reader;
-    private final JacksonObjectWriter<O> writer;
+    private static final long serialVersionUID = 3553771152200602518L;
+    private final JacksonObjectReader reader;
+    private final JacksonObjectWriter writer;
 
     public JacksonObjectInputOutputManager(ObjectMapper objectMapper) {
-        reader = new JacksonObjectReader<>(objectMapper);
-        writer = new JacksonObjectWriter<>(objectMapper);
+        reader = new JacksonObjectReader(objectMapper);
+        writer = new JacksonObjectWriter(objectMapper);
     }
 
     @Override
-    public ObjectReader<O> getObjectReader() {
+    public ObjectReader getObjectReader() {
         return reader;
     }
 
     @Override
-    public ObjectWriter<O> getObjectWriter() {
+    public ObjectWriter getObjectWriter() {
         return writer;
     }
 

@@ -10,18 +10,19 @@ import java.io.Serializable;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:43 PM)
  */
-public class SerializableObjectInputOutputManager<I extends Serializable> implements ObjectInputOutputManager<I> {
+public class SerializableObjectInputOutputManager implements ObjectInputOutputManager {
 
-    private final ObjectReader<I> objectReader = new SerializableObjectReader<>();
-    private final ObjectWriter<I> objectWriter = new SerializableObjectWriter<>();
+    private static final long serialVersionUID = 834336052619626604L;
+    private final ObjectReader objectReader = new SerializableObjectReader();
+    private final ObjectWriter objectWriter = new SerializableObjectWriter();
 
     @Override
-    public ObjectReader<I> getObjectReader() {
+    public ObjectReader getObjectReader() {
         return objectReader;
     }
 
     @Override
-    public ObjectWriter<I> getObjectWriter() {
+    public ObjectWriter getObjectWriter() {
         return objectWriter;
     }
 

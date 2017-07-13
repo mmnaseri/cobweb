@@ -13,8 +13,8 @@ import java.nio.file.StandardOpenOption;
 public class SerializableObjectWriterTest extends BaseObjectWriterTest {
 
     @Override
-    protected SerializableObjectWriter<String> getObjectWriter() {
-        return new SerializableObjectWriter<>();
+    protected SerializableObjectWriter getObjectWriter() {
+        return new SerializableObjectWriter();
     }
 
     @Override

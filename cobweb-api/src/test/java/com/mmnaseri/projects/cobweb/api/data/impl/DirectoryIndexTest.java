@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration.forIndexType;
+import static com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration.forKeyType;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -29,13 +29,12 @@ public class DirectoryIndexTest extends BaseIndexTest {
         final FileSystem fileSystem = Jimfs.newFileSystem();
         root = FileSystemUtils.getAbsolutePath(fileSystem, "data", "index");
         final DirectoryIndexFactory factory = new DirectoryIndexFactory();
-        final DirectoryIndexConfiguration<UUID, SerializableDocument> manager = forIndexType(UUID.class, SerializableDocument.class)
+        final DirectoryIndexConfiguration<UUID> configuration = forKeyType(UUID.class)
                 .andRootPath(root)
-                .andIOManager(new SerializableObjectInputOutputManager<>())
+                .andIOManager(new SerializableObjectInputOutputManager())
                 .andStringifier(new UUIDStringifier())
                 .build();
-
-        return factory.getInstance(manager);
+        return factory.getInstance(configuration);
     }
 
     @Test

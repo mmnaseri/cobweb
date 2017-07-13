@@ -8,11 +8,11 @@ import java.io.Serializable;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:47 PM)
  */
-public class SerializableObjectInputOutputManagerTest extends BaseObjectInputOutputManagerTest<Serializable> {
+public class SerializableObjectInputOutputManagerTest extends BaseObjectInputOutputManagerTest {
 
     @Override
-    protected ObjectInputOutputManager<Serializable> getManager() {
-        return new SerializableObjectInputOutputManager<>();
+    protected ObjectInputOutputManager getManager() {
+        return new SerializableObjectInputOutputManager();
     }
 
     @Override

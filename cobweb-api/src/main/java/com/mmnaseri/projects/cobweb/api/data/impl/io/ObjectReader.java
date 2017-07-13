@@ -3,6 +3,7 @@ package com.mmnaseri.projects.cobweb.api.data.impl.io;
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -14,11 +15,11 @@ import java.nio.file.Path;
  * @since 1.0 (7/10/17, 6:28 PM)
  */
 @FunctionalInterface
-public interface ObjectReader<O> {
+public interface ObjectReader extends Serializable {
 
-    <I extends O> I read(Path path, Class<I> type) throws IOException;
+    <I> I read(Path path, Class<I> type) throws IOException;
 
-    default <I extends O> I read(Path path, Type type) throws IOException {
+    default <I> I read(Path path, Type type) throws IOException {
         final Class<?> clazz;
         if (type instanceof Class<?>) {
             clazz = (Class<?>) type;
@@ -34,7 +35,7 @@ public interface ObjectReader<O> {
         return read(path, (Class<I>) clazz);
     }
 
-    default <I extends O> I read(Path path, ParameterizedTypeReference<I> typeReference) throws IOException {
+    default <I> I read(Path path, ParameterizedTypeReference<I> typeReference) throws IOException {
         return read(path, typeReference.getType());
     }
 

@@ -13,10 +13,12 @@ import java.nio.file.StandardOpenOption;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:30 PM)
  */
-public class SerializableObjectReader<O extends Serializable> implements ObjectReader<O> {
+public class SerializableObjectReader implements ObjectReader {
+
+    private static final long serialVersionUID = -4265748081556781840L;
 
     @Override
-    public <I extends O> I read(Path path, Class<I> type) throws IOException {
+    public <I> I read(Path path, Class<I> type) throws IOException {
         final Object object;
         try (final ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(path, StandardOpenOption.READ))) {
             try {

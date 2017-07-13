@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 6:11 PM)
  */
-public class InMemoryDictionary<K extends Serializable & Comparable<K>> implements Dictionary<K>, Serializable {
+public class InMemoryDictionary<K extends Serializable & Comparable<K>> implements Dictionary<K> {
 
     private static final long serialVersionUID = -5402143614757343791L;
     private final Set<K> data = new CopyOnWriteArraySet<>();

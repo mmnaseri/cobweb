@@ -35,12 +35,12 @@ public abstract class BaseObjectReaderTest {
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         final String written = UUID.randomUUID().toString();
         write(path, written);
-        final ObjectReader<String> reader = getObjectReader();
+        final ObjectReader reader = getObjectReader();
         final String read = reader.read(path, String.class);
         assertThat(read, is(written));
     }
 
-    protected abstract ObjectReader<String> getObjectReader();
+    protected abstract ObjectReader getObjectReader();
 
     protected abstract void write(Path path, String written) throws IOException;
 

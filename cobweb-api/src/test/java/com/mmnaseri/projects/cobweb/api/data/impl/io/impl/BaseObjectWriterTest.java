@@ -31,7 +31,7 @@ public abstract class BaseObjectWriterTest {
 
     @Test
     public void testWritingObject() throws Exception {
-        final ObjectWriter<String> writer = getObjectWriter();
+        final ObjectWriter writer = getObjectWriter();
         final String written = "This is a test";
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         assertThat(Files.exists(path), is(false));
@@ -41,7 +41,7 @@ public abstract class BaseObjectWriterTest {
         assertThat(read, is(written));
     }
 
-    protected abstract ObjectWriter<String> getObjectWriter();
+    protected abstract ObjectWriter getObjectWriter();
 
     protected abstract Object read(Path path) throws IOException, ClassNotFoundException;
 

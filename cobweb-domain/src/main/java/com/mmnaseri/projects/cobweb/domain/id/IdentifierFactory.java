@@ -7,7 +7,9 @@ import java.util.UUID;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/5/17, 7:15 PM)
  */
-public abstract class IdentifierFactory<I extends Serializable & Comparable<I>> {
+public abstract class IdentifierFactory<I extends Serializable & Comparable<I>> implements Serializable {
+
+    private static final long serialVersionUID = 6382529996637253335L;
 
     private IdentifierFactory() {}
 
@@ -20,6 +22,8 @@ public abstract class IdentifierFactory<I extends Serializable & Comparable<I>> 
     public abstract String toString(Identifier<I> identifier);
 
     public static final IdentifierFactory<UUID> UUID_IDENTIFIER_FACTORY = new IdentifierFactory<UUID>() {
+
+        private static final long serialVersionUID = -7026536045160907701L;
 
         public Identifier<UUID> getIdentifier(UUID value) {
             return new Identifier<UUID>(value);

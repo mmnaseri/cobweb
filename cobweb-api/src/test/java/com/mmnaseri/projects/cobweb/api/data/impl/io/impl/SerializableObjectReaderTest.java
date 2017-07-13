@@ -12,8 +12,8 @@ import java.nio.file.Path;
 public class SerializableObjectReaderTest extends BaseObjectReaderTest {
 
     @Override
-    protected SerializableObjectReader<String> getObjectReader() {
-        return new SerializableObjectReader<>();
+    protected SerializableObjectReader getObjectReader() {
+        return new SerializableObjectReader();
     }
 
     @Override

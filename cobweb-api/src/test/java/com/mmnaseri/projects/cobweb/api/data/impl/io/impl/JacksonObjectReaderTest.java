@@ -23,8 +23,8 @@ public class JacksonObjectReaderTest extends BaseObjectReaderTest {
     }
 
     @Override
-    protected ObjectReader<String> getObjectReader() {
-        return new JacksonObjectReader<>(objectMapper);
+    protected ObjectReader getObjectReader() {
+        return new JacksonObjectReader(objectMapper);
     }
 
     @Override

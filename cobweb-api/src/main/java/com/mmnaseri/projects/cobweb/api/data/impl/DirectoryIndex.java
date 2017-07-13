@@ -19,11 +19,12 @@ import java.util.stream.Stream;
  */
 public class DirectoryIndex<K extends Serializable & Comparable<K>, V extends Serializable> implements Index<K, V> {
 
+    private static final long serialVersionUID = -1848479875693303556L;
     private final Path root;
     private final Stringifier<K> stringifier;
-    private final ObjectInputOutputManager<V> ioManager;
+    private final ObjectInputOutputManager ioManager;
 
-    public DirectoryIndex(Path root, Stringifier<K> stringifier, ObjectInputOutputManager<V> ioManager) throws IOException {
+    public DirectoryIndex(Path root, Stringifier<K> stringifier, ObjectInputOutputManager ioManager) throws IOException {
         this.stringifier = stringifier;
         Files.createDirectories(root);
         this.root = root;

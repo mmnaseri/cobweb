@@ -10,6 +10,8 @@ import java.util.UUID;
  */
 public class UUIDStringifier implements Stringifier<UUID> {
 
+    private static final long serialVersionUID = 6568707126955852372L;
+
     @Override
     public UUID fromString(String string) {
         return UUID.fromString(string);

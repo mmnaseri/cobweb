@@ -12,8 +12,9 @@ import java.nio.file.StandardOpenOption;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 2:09 AM)
  */
-public class JacksonObjectReader<O> implements ObjectReader<O> {
+public class JacksonObjectReader implements ObjectReader {
 
+    private static final long serialVersionUID = -4265846052224130742L;
     private final ObjectMapper objectMapper;
 
     public JacksonObjectReader(ObjectMapper objectMapper) {
@@ -21,7 +22,7 @@ public class JacksonObjectReader<O> implements ObjectReader<O> {
     }
 
     @Override
-    public <I extends O> I read(Path path, Class<I> type) throws IOException {
+    public <I> I read(Path path, Class<I> type) throws IOException {
         return objectMapper.readValue(Files.newInputStream(path, StandardOpenOption.READ), type);
     }
 

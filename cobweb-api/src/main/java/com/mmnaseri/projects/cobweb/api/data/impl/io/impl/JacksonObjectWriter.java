@@ -12,8 +12,9 @@ import java.nio.file.StandardOpenOption;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/12/17, 2:08 AM)
  */
-public class JacksonObjectWriter<O> implements ObjectWriter<O> {
+public class JacksonObjectWriter implements ObjectWriter {
 
+    private static final long serialVersionUID = 7700453551268597268L;
     private final ObjectMapper objectMapper;
 
     public JacksonObjectWriter(ObjectMapper objectMapper) {
@@ -21,7 +22,7 @@ public class JacksonObjectWriter<O> implements ObjectWriter<O> {
     }
 
     @Override
-    public void write(Path path, O object) throws IOException {
+    public void write(Path path, Object object) throws IOException {
         objectMapper.writer().writeValue(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE), object);
     }
 

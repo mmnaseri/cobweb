@@ -17,13 +17,13 @@ import static org.hamcrest.Matchers.is;
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
  * @since 1.0 (7/10/17, 6:44 PM)
  */
-public abstract class BaseObjectInputOutputManagerTest<O> {
+public abstract class BaseObjectInputOutputManagerTest {
 
     private FileSystem fileSystem;
 
-    protected abstract ObjectInputOutputManager<O> getManager();
+    protected abstract ObjectInputOutputManager getManager();
 
-    protected abstract O getSubject();
+    protected abstract Object getSubject();
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -34,20 +34,20 @@ public abstract class BaseObjectInputOutputManagerTest<O> {
 
     @Test
     public void testReadingWhatIsWritten() throws Exception {
-        final O subject = getSubject();
+        final Object subject = getSubject();
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         getManager().getObjectWriter().write(path, subject);
-        final O read = getManager().getObjectReader().read(path, subject.getClass());
+        final Object read = getManager().getObjectReader().read(path, subject.getClass());
         assertThat(read, is(subject));
     }
 
     @Test
     public void testDaisyChaining() throws Exception {
-        final O subject = getSubject();
+        final Object subject = getSubject();
         final Path path = FileSystemUtils.getAbsolutePath(fileSystem, "tmp", "file.bin");
         getManager().getObjectWriter().write(path, subject);
         getManager().getObjectWriter().write(path, getManager().getObjectReader().read(path, subject.getClass()));
-        final O read = getManager().getObjectReader().read(path, subject.getClass());
+        final Object read = getManager().getObjectReader().read(path, subject.getClass());
         assertThat(read, is(subject));
     }
 

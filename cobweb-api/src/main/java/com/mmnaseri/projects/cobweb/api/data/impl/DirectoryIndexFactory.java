@@ -12,6 +12,8 @@ import java.io.Serializable;
  */
 public class DirectoryIndexFactory implements IndexFactory<DirectoryIndexConfiguration> {
 
+    private static final long serialVersionUID = -1361981396412346706L;
+
     @Override
     public <I extends Serializable & Comparable<I>, V extends Serializable> Index<I, V> getInstance(DirectoryIndexConfiguration configuration) {
         try {
