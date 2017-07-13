@@ -1,6 +1,7 @@
 package com.mmnaseri.projects.cobweb.domain.content;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -12,6 +13,7 @@ public class Tag<I extends Serializable & Comparable<I>> extends Persistent<I> {
 
     private String name;
     private String description;
+    private List<Document<I>> documents;
 
     public String getName() {
         return name;
@@ -27,6 +29,14 @@ public class Tag<I extends Serializable & Comparable<I>> extends Persistent<I> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Document<I>> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document<I>> documents) {
+        this.documents = documents;
     }
 
 }
