@@ -22,6 +22,4 @@ public abstract class Persistent<I extends Serializable & Comparable<I>> impleme
         this.id = id;
     }
 
-    public abstract ObjectType getObjectType();
-
 }

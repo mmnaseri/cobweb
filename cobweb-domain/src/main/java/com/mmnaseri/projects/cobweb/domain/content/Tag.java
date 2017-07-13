@@ -29,9 +29,4 @@ public class Tag<I extends Serializable & Comparable<I>> extends Persistent<I> {
         this.description = description;
     }
 
-    @Override
-    public ObjectType getObjectType() {
-        return ObjectType.TAG;
-    }
-
 }

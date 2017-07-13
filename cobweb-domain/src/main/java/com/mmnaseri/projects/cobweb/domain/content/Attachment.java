@@ -28,9 +28,4 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
         this.path = path;
     }
 
-    @Override
-    public ObjectType getObjectType() {
-        return ObjectType.ATTACHMENT;
-    }
-
 }
