@@ -5,6 +5,7 @@ import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.NamedInvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.PersistentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.graph.Graph;
+import com.mmnaseri.projects.cobweb.api.graph.impl.domain.*;
 import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.domain.content.*;
 import com.mmnaseri.projects.cobweb.domain.id.Identifier;
@@ -63,7 +64,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         vertex.setAttachments(new HashMap<>());
         vertex.setProperties(new DocumentProperties());
         vertex.setTags(new HashSet<>());
-        return verticesIndex.save(vertex);
+        return wrap(verticesIndex.save(vertex));
     }
 
     @Override
@@ -77,7 +78,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         edge.setTags(new HashSet<>());
         vertexOutgoingIndex.add(from, edge);
         vertexIncomingIndex.add(to, edge);
-        return edgesIndex.save(edge);
+        return wrap(edgesIndex.save(edge));
     }
 
     @Override
@@ -89,8 +90,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         tag.setId(nextId());
         tag.setName(name);
         tag.setDescription(description);
-        tagsIndex.save(tag.getId(), tag);
-        return tag;
+        return wrap(tagsIndex.save(tag));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         final Tag<K> found = findOne(null);
         found.setName(newName);
         found.setDocuments(Collections.emptyList());
-        tagsIndex.save(found.getId(), found);
+        tagsIndex.save(found);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         final Tag<K> found = findOne(null);
         found.setDescription(newDescription);
         found.setDocuments(Collections.emptyList());
-        tagsIndex.save(found.getId(), found);
+        tagsIndex.save(found);
     }
 
     @Override
@@ -119,8 +119,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         attachment.setAnchors(new HashSet<>());
         attachment.setMime(mime);
         copyAttachment(attachment, path);
-        attachmentsIndex.save(attachment.getId(), attachment);
-        return attachment;
+        return wrap(attachmentsIndex.save(attachment));
     }
 
     @Override
@@ -139,7 +138,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         } else {
             throw new IllegalArgumentException();
         }
-        return document;
+        return wrap(document);
     }
 
     @Override
@@ -244,6 +243,27 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     private Path getAttachmentFilePath(Attachment<K> attachment) {
         return getConfiguration().getAttachmentsPath().resolve(getConfiguration().getIdentifierFactory().toString(attachment.getId()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <P extends Persistent<K>> P wrap(P persistent){
+        if (persistent instanceof LazyPersistent) {
+            return persistent;
+        }
+        if (persistent instanceof Tag<?>) {
+            return (P) new LazyTag<K>((Tag) persistent, null);
+        } else if (persistent instanceof Attachment<?>) {
+            return (P) new LazyAttachment<K>((Attachment) persistent, null);
+        } else if (persistent instanceof Document<?>) {
+            final LazyLoader<Set<Tag<K>>> tagLoader = null;
+            final LazyLoader<Map<String, Attachment<K>>> attachmentLoader = null;
+            if (persistent instanceof Edge<?>) {
+                return (P) new LazyEdge<K>((Edge) persistent, tagLoader, attachmentLoader, null, null);
+            } else if (persistent instanceof Vertex<?>) {
+                return (P) new LazyVertex<K>((Vertex) persistent, tagLoader, attachmentLoader, null, null);
+            }
+        }
+        throw new IllegalArgumentException();
     }
 
 }
