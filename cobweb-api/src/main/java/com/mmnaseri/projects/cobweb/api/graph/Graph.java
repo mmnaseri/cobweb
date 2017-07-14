@@ -35,12 +35,12 @@ public interface Graph<K extends Serializable & Comparable<K>, C extends GraphCo
 
     void delete(Persistent<K> persistent);
 
-    <P extends Persistent<K>> List<P> find(Query<K, P> query);
+    <P extends Persistent<K>, R> List<R> find(Query<P, R> query);
 
-    <P extends Persistent<K>> long count(Query<K, P> query);
+    <P extends Persistent<K>, R> long count(Query<P, R> query);
 
-    <P extends Persistent<K>> boolean exists(Query<K, P> query);
+    <P extends Persistent<K>, R> boolean exists(Query<P, R> query);
 
-    <P extends Persistent<K>> P findOne(Query<K, P> query);
+    <P extends Persistent<K>, R> R findOne(Query<P, R> query);
 
 }

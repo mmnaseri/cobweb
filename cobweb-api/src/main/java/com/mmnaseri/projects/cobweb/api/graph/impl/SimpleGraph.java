@@ -1,5 +1,6 @@
 package com.mmnaseri.projects.cobweb.api.graph.impl;
 
+import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.data.ix.DocumentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.NamedInvertedIndexWrapper;
@@ -7,6 +8,7 @@ import com.mmnaseri.projects.cobweb.api.data.ix.PersistentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.graph.Graph;
 import com.mmnaseri.projects.cobweb.api.graph.impl.domain.*;
 import com.mmnaseri.projects.cobweb.api.query.Query;
+import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
 import com.mmnaseri.projects.cobweb.domain.content.*;
 import com.mmnaseri.projects.cobweb.domain.id.Identifier;
 
@@ -15,6 +17,10 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import static com.mmnaseri.projects.cobweb.api.query.dsl.Projections.itself;
+import static com.mmnaseri.projects.cobweb.api.query.dsl.QueryBuilder.from;
+import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.PersistentConditionals.entityId;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -34,6 +40,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     private final InvertedIndexWrapper<K> documentTagIndex;
     private final InvertedIndexWrapper<K> tagDocumentIndex;
     private final NamedInvertedIndexWrapper<K> documentAttachmentIndex;
+    private final GraphSources sources;
 
     public SimpleGraph(SimpleGraphConfiguration<K> configuration) throws IOException {
         this.configuration = configuration;
@@ -48,6 +55,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         attachmentAnchorsIndex = new InvertedIndexWrapper<>(indexes.anchors());
         documentTagIndex = new InvertedIndexWrapper<>(indexes.documentTags());
         tagDocumentIndex = new InvertedIndexWrapper<>(indexes.tagDocuments());
+        sources = new GraphSources();
     }
 
     @Override
@@ -98,7 +106,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         if (exists(null)) {
             throw new IllegalStateException();
         }
-        final Tag<K> found = findOne(null);
+        final Tag<K> found = findById(tag);
         found.setName(newName);
         found.setDocuments(Collections.emptyList());
         tagsIndex.save(found);
@@ -106,7 +114,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     @Override
     public void describeTag(Tag<K> tag, String newDescription) {
-        final Tag<K> found = findOne(null);
+        final Tag<K> found = findById(tag);
         found.setDescription(newDescription);
         found.setDocuments(Collections.emptyList());
         tagsIndex.save(found);
@@ -180,7 +188,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     }
 
     private void deleteEdge(Edge<K> edge) {
-        final Edge<K> found = findOne(null);
+        final Edge<K> found = findById(edge);
         vertexOutgoingIndex.remove(found.getFrom(), found);
         vertexIncomingIndex.remove(found.getTo(), found);
         deleteDocument(found);
@@ -188,7 +196,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     }
 
     private void deleteVertex(Vertex<K> vertex) {
-        final Vertex<K> found = findOne(null);
+        final Vertex<K> found = findById(vertex);
         deleteDocument(found);
         verticesIndex.delete(found);
     }
@@ -201,25 +209,25 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     }
 
     @Override
-    public <P extends Persistent<K>> List<P> find(Query<K, P> query) {
+    public <P extends Persistent<K>, R> List<R> find(Query<P, R> query) {
         //todo
         return null;
     }
 
     @Override
-    public <P extends Persistent<K>> long count(Query<K, P> query) {
+    public <P extends Persistent<K>, R> long count(Query<P, R> query) {
         //todo
         return 0;
     }
 
     @Override
-    public <P extends Persistent<K>> boolean exists(Query<K, P> query) {
+    public <P extends Persistent<K>, R> boolean exists(Query<P, R> query) {
         //todo
         return false;
     }
 
     @Override
-    public <P extends Persistent<K>> P findOne(Query<K, P> query) {
+    public <P extends Persistent<K>, R> R findOne(Query<P, R> query) {
         //todo
         return null;
     }
@@ -264,6 +272,39 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
             }
         }
         throw new IllegalArgumentException();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <P extends Persistent<K>> P findById(P sample) {
+        final Sources<K, P> sources;
+        if (sample instanceof Edge<?>) {
+            sources = (Sources<K, P>) this.sources.edges;
+        } else if (sample instanceof Vertex<?>) {
+            sources = (Sources<K, P>) this.sources.vertices;
+        } else if (sample instanceof Attachment<?>) {
+            sources = (Sources<K, P>) this.sources.attachments;
+        } else if (sample instanceof Tag<?>) {
+            sources = (Sources<K, P>) this.sources.tags;
+        } else {
+            throw new IllegalStateException();
+        }
+        return findOne(from(sources).select(itself()).where(entityId(sources).is(sample.getId().getValue())));
+    }
+
+    private class GraphSources {
+
+        private final Sources<K, Edge<K>> edges = Sources.edges(new ParameterizedTypeReference<K>() {
+        });
+
+        private final Sources<K, Vertex<K>> vertices = Sources.vertices(new ParameterizedTypeReference<K>() {
+        });
+
+        private final Sources<K, Attachment<K>> attachments = Sources.attachments(new ParameterizedTypeReference<K>() {
+        });
+
+        private final Sources<K, Tag<K>> tags = Sources.tags(new ParameterizedTypeReference<K>() {
+        });
+
     }
 
 }
