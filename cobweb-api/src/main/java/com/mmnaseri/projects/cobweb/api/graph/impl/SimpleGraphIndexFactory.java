@@ -1,13 +1,19 @@
 package com.mmnaseri.projects.cobweb.api.graph.impl;
 
+import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.common.SerializableMap;
 import com.mmnaseri.projects.cobweb.api.common.SerializableSet;
 import com.mmnaseri.projects.cobweb.api.data.Index;
+import com.mmnaseri.projects.cobweb.api.data.Stringifier;
+import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration;
+import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexFactory;
+import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
 import com.mmnaseri.projects.cobweb.domain.content.Attachment;
 import com.mmnaseri.projects.cobweb.domain.content.DocumentProperties;
 import com.mmnaseri.projects.cobweb.domain.content.Tag;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -15,43 +21,85 @@ import java.io.Serializable;
  */
 class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
 
+    private final Path root;
+    private final ObjectInputOutputManager inputOutputManager;
+    private final Stringifier<K> stringifier;
+    private final Index<K, DocumentProperties> vertices;
+    private final Index<K, DocumentProperties> edges;
+    private final Index<K, Tag<K>> tags;
+    private final Index<K, Attachment<K>> attachments;
+    private final Index<K, SerializableSet<K>> incomingEdges;
+    private final Index<K, SerializableSet<K>> outgoingEdges;
+    private final Index<K, SerializableMap<String, K>> documentAttachments;
+    private final Index<K, SerializableSet<K>> anchors;
+    private final Index<K, SerializableSet<K>> documentTags;
+    private final Index<K, SerializableSet<K>> tagDocuments;
+
+    SimpleGraphIndexFactory(Path root, ObjectInputOutputManager inputOutputManager, Stringifier<K> stringifier) {
+        this.root = root;
+        this.inputOutputManager = inputOutputManager;
+        this.stringifier = stringifier;
+        final DirectoryIndexFactory factory = new DirectoryIndexFactory();
+        vertices = factory.getInstance(configureIndex("vertices"));
+        edges = factory.getInstance(configureIndex("edges"));
+        tags = factory.getInstance(configureIndex("tags"));
+        attachments = factory.getInstance(configureIndex("attachments"));
+        incomingEdges = factory.getInstance(configureIndex("incomingEdges"));
+        outgoingEdges = factory.getInstance(configureIndex("outgoingEdges"));
+        documentAttachments = factory.getInstance(configureIndex("documentAttachments"));
+        anchors = factory.getInstance(configureIndex("anchors"));
+        documentTags = factory.getInstance(configureIndex("documentTags"));
+        tagDocuments = factory.getInstance(configureIndex("tagDocuments"));
+    }
+
+    private DirectoryIndexConfiguration configureIndex(String relativePath) {
+        return DirectoryIndexConfiguration
+                    .forKeyType(new ParameterizedTypeReference<K>() {
+                    })
+                    .andRootPath(root.resolve(relativePath))
+                    .andIOManager(inputOutputManager)
+                    .andStringifier(stringifier)
+                    .build();
+    }
+
     Index<K, DocumentProperties> vertices() {
-        return null;
+        return vertices;
     }
 
     Index<K, DocumentProperties> edges() {
-        return null;
+        return edges;
     }
 
     Index<K, Tag<K>> tags() {
-        return null;
+        return tags;
     }
 
     Index<K, Attachment<K>> attachments() {
-        return null;
+        return attachments;
     }
 
     Index<K, SerializableSet<K>> incomingEdges() {
-        return null;
+        return incomingEdges;
     }
 
     Index<K, SerializableSet<K>> outgoingEdges() {
-        return null;
+        return outgoingEdges;
     }
+
     Index<K, SerializableMap<String, K>> documentAttachments() {
-        return null;
+        return documentAttachments;
     }
 
     Index<K, SerializableSet<K>> anchors() {
-        return null;
+        return anchors;
     }
 
     Index<K, SerializableSet<K>> documentTags() {
-        return null;
+        return documentTags;
     }
 
     Index<K, SerializableSet<K>> tagDocuments() {
-        return null;
+        return tagDocuments;
     }
 
 }

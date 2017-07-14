@@ -1,5 +1,6 @@
 package com.mmnaseri.projects.cobweb.api.graph;
 
+import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.domain.content.*;
 
 import java.io.Serializable;

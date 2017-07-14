@@ -1,7 +1,9 @@
 package com.mmnaseri.projects.cobweb.api.graph.impl;
 
+import com.mmnaseri.projects.cobweb.api.data.impl.IdentifierFactoryStringifier;
 import com.mmnaseri.projects.cobweb.api.graph.GraphConfiguration;
 import com.mmnaseri.projects.cobweb.api.graph.IdentifierGenerator;
+import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
 import com.mmnaseri.projects.cobweb.domain.id.IdentifierFactory;
 
 import java.io.Serializable;
@@ -20,12 +22,12 @@ public class SimpleGraphConfiguration<K extends Serializable & Comparable<K>> im
     private final Path root;
     private final SimpleGraphIndexFactory<K> indexFactory;
 
-    public SimpleGraphConfiguration(String name, IdentifierFactory<K> identifierFactory, IdentifierGenerator<K> identifierGenerator, Path root) {
+    public SimpleGraphConfiguration(String name, IdentifierFactory<K> identifierFactory, IdentifierGenerator<K> identifierGenerator, Path root, ObjectInputOutputManager inputOutputManager) {
         this.name = name;
         this.identifierFactory = identifierFactory;
         this.identifierGenerator = identifierGenerator;
         this.root = root;
-        indexFactory = new SimpleGraphIndexFactory<>();
+        indexFactory = new SimpleGraphIndexFactory<>(root, inputOutputManager, new IdentifierFactoryStringifier<>(identifierFactory));
     }
 
     @Override
@@ -52,7 +54,7 @@ public class SimpleGraphConfiguration<K extends Serializable & Comparable<K>> im
     }
 
     public Path getAttachmentsPath() {
-        return root.resolve("attachments");
+        return root.resolve("attachmentFiles");
     }
 
 }

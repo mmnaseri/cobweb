@@ -1,4 +1,4 @@
-package com.mmnaseri.projects.cobweb.api.graph;
+package com.mmnaseri.projects.cobweb.api.query;
 
 import com.mmnaseri.projects.cobweb.domain.content.Persistent;
 

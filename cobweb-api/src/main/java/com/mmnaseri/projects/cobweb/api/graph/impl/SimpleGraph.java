@@ -5,7 +5,7 @@ import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.NamedInvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.PersistentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.graph.Graph;
-import com.mmnaseri.projects.cobweb.api.graph.Query;
+import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.domain.content.*;
 import com.mmnaseri.projects.cobweb.domain.id.Identifier;
 
@@ -231,6 +231,11 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     private void copyAttachment(Attachment<K> attachment, Path path) {
         try {
+            if (!Files.exists(getConfiguration().getAttachmentsPath())) {
+                Files.createDirectories(getConfiguration().getAttachmentsPath());
+            } else if (!Files.isDirectory(getConfiguration().getAttachmentsPath())) {
+                throw new IllegalStateException();
+            }
             Files.copy(path, getAttachmentFilePath(attachment));
         } catch (IOException e) {
             throw new IllegalStateException(e);
