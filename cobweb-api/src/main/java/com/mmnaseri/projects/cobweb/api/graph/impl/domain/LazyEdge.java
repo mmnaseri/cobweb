@@ -83,6 +83,16 @@ public class LazyEdge<K extends Serializable & Comparable<K>> extends Edge<K> im
     }
 
     @Override
+    public String getLabel() {
+        return document.getLabel();
+    }
+
+    @Override
+    public void setLabel(String label) {
+        document.setLabel(label);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -93,6 +103,11 @@ public class LazyEdge<K extends Serializable & Comparable<K>> extends Edge<K> im
     @Override
     public int hashCode() {
         return edge.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return edge.toString();
     }
 
 }

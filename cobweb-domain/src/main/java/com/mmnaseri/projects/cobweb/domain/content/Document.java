@@ -14,6 +14,7 @@ public abstract class Document<I extends Serializable & Comparable<I>> extends P
     private Set<Tag<I>> tags;
     private Map<String, Attachment<I>> attachments;
     private DocumentProperties properties;
+    private String label;
 
     public Set<Tag<I>> getTags() {
         return tags;
@@ -37,6 +38,14 @@ public abstract class Document<I extends Serializable & Comparable<I>> extends P
 
     public void setProperties(DocumentProperties properties) {
         this.properties = properties;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

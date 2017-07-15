@@ -67,4 +67,19 @@ public class LazyDocument<K extends Serializable & Comparable<K>> extends Docume
         document.setProperties(properties);
     }
 
+    @Override
+    public String getLabel() {
+        return document.getLabel();
+    }
+
+    @Override
+    public void setLabel(String label) {
+        document.setLabel(label);
+    }
+
+    @Override
+    public String toString() {
+        return document.toString();
+    }
+
 }

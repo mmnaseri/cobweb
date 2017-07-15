@@ -1,5 +1,6 @@
-package com.mmnaseri.projects.cobweb.api.query.dsl;
+package com.mmnaseri.projects.cobweb.api.query.dsl.cond;
 
+import com.mmnaseri.projects.cobweb.api.query.dsl.ConditionalExpression;
 import com.mmnaseri.projects.cobweb.domain.content.Document;
 import com.mmnaseri.projects.cobweb.domain.content.Tag;
 

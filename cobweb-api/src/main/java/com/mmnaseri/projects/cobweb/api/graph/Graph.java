@@ -15,9 +15,9 @@ public interface Graph<K extends Serializable & Comparable<K>, C extends GraphCo
 
     C getConfiguration();
 
-    Vertex<K> createVertex();
+    Vertex<K> createVertex(String label);
 
-    Edge<K> link(Vertex<K> from, Vertex<K> to);
+    Edge<K> link(Vertex<K> from, Vertex<K> to, String label);
 
     Tag<K> createTag(String name, String description);
 

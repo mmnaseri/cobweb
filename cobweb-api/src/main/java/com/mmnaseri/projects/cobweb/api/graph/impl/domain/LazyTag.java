@@ -77,4 +77,9 @@ public class LazyTag<K extends Serializable & Comparable<K>> extends Tag<K> impl
         return tag.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return tag.toString();
+    }
+
 }

@@ -1,7 +1,7 @@
-package com.mmnaseri.projects.cobweb.api.query.dsl.impl;
+package com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl;
 
 import com.mmnaseri.projects.cobweb.api.query.dsl.ConditionalExpression;
-import com.mmnaseri.projects.cobweb.api.query.dsl.DocumentTagsConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.DocumentTagsConditionalExpression;
 import com.mmnaseri.projects.cobweb.domain.content.Document;
 import com.mmnaseri.projects.cobweb.domain.content.Tag;
 
@@ -21,7 +21,11 @@ public class DefaultDocumentTagsConditionalExpression<K extends Serializable & C
 
     @Override
     public ConditionalExpression<K, P> contains(String tagName) {
-        return setConditional(subject + "#" + tagName, value -> value.getTags().stream().anyMatch(tag -> tag.getName().equals(tagName)));
+        return setConditional(subject + "#" + tagName, value ->
+                value.getTags().stream().anyMatch(
+                        tag -> tag.getName().equals(tagName)
+                )
+        );
     }
 
     @Override

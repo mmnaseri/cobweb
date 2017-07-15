@@ -1,10 +1,12 @@
 package com.mmnaseri.projects.cobweb.api.query.dsl;
 
 import com.mmnaseri.projects.cobweb.api.query.Query;
-import com.mmnaseri.projects.cobweb.api.query.dsl.impl.SimpleConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.IdentifierConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.SimpleConditionalExpression;
 import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
 import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 import com.mmnaseri.projects.cobweb.domain.content.Persistent;
+import com.mmnaseri.projects.cobweb.domain.id.Identifier;
 
 import java.io.Serializable;
 
@@ -37,6 +39,21 @@ public class QueryBuilder<K extends Serializable & Comparable<K>, P extends Pers
     @Override
     public Query<P, R> whereNot(ConditionalExpression<K, P> expression) {
         return where(new SimpleConditionalExpression<>(expression.getConditional().not()));
+    }
+
+    @Override
+    public Query<P, R> all() {
+        return where(new SimpleConditionalExpression<>(value -> true));
+    }
+
+    @Override
+    public Query<P, R> id(K key) {
+        return where(new IdentifierConditionalExpression<>(key));
+    }
+
+    @Override
+    public Query<P, R> id(Identifier<K> identifier) {
+        return id(identifier.getValue());
     }
 
     @Override

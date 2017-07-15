@@ -28,4 +28,9 @@ public class Edge<I extends Serializable & Comparable<I>> extends Document<I> {
         this.to = to;
     }
 
+    @Override
+    public String toString() {
+        return "{edge(" + getLabel() + ")}";
+    }
+
 }

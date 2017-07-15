@@ -16,6 +16,7 @@ public class EdgeMetadata<K extends Serializable & Comparable<K>> implements Ser
     private static final long serialVersionUID = 4681949030550724791L;
     private K from;
     private K to;
+    private String label;
     private DocumentProperties properties;
 
     public EdgeMetadata() {
@@ -25,6 +26,7 @@ public class EdgeMetadata<K extends Serializable & Comparable<K>> implements Ser
         this.from = edge.getFrom().getId().getValue();
         this.to = edge.getTo().getId().getValue();
         this.properties = edge.getProperties();
+        this.label = edge.getLabel();
     }
 
     public K getFrom() {
@@ -51,6 +53,14 @@ public class EdgeMetadata<K extends Serializable & Comparable<K>> implements Ser
         this.properties = properties;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     public Edge<K> toEdge(K key, IdentifierFactory<K> factory) {
         final Edge<K> edge = new Edge<>();
         edge.setId(factory.getIdentifier(key));
@@ -62,6 +72,7 @@ public class EdgeMetadata<K extends Serializable & Comparable<K>> implements Ser
         edge.setFrom(from);
         edge.setTo(to);
         edge.setProperties(getProperties());
+        edge.setLabel(getLabel());
         return edge;
     }
 

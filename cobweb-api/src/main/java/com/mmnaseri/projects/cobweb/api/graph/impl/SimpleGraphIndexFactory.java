@@ -8,7 +8,6 @@ import com.mmnaseri.projects.cobweb.api.data.Stringifier;
 import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration;
 import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexFactory;
 import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
-import com.mmnaseri.projects.cobweb.domain.content.DocumentProperties;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -22,7 +21,7 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
     private final Path root;
     private final ObjectInputOutputManager inputOutputManager;
     private final Stringifier<K> stringifier;
-    private final Index<K, DocumentProperties> vertices;
+    private final Index<K, VertexMetadata> vertices;
     private final Index<K, TagMetadata> tags;
     private final Index<K, AttachmentMetadata> attachments;
     private final Index<K, SerializableSet<K>> incomingEdges;
@@ -60,7 +59,7 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
                     .build();
     }
 
-    Index<K, DocumentProperties> vertices() {
+    Index<K, VertexMetadata> vertices() {
         return vertices;
     }
 
@@ -99,4 +98,5 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
     Index<K, EdgeMetadata<K>> edges() {
         return edges;
     }
+
 }

@@ -65,4 +65,9 @@ public class LazyAttachment<K extends Serializable & Comparable<K>> extends Atta
         return attachment.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return attachment.toString();
+    }
+
 }

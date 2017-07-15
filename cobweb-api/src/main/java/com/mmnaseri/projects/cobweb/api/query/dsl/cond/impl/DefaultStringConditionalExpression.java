@@ -1,7 +1,7 @@
-package com.mmnaseri.projects.cobweb.api.query.dsl.impl;
+package com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl;
 
 import com.mmnaseri.projects.cobweb.api.query.dsl.ConditionalExpression;
-import com.mmnaseri.projects.cobweb.api.query.dsl.StringConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.StringConditionalExpression;
 import com.mmnaseri.projects.cobweb.api.query.dsl.ValueReader;
 import com.mmnaseri.projects.cobweb.domain.content.Persistent;
 

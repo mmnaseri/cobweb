@@ -101,6 +101,7 @@ public class DirectoryIndex<K extends Serializable & Comparable<K>, V extends Se
         return list()
                 .map(Path::getFileName)
                 .map(Path::toString)
+                .map(string -> string.substring(0, string.length() - 5))
                 .map(stringifier::fromString)
                 .collect(Collectors.toList());
     }
@@ -122,12 +123,11 @@ public class DirectoryIndex<K extends Serializable & Comparable<K>, V extends Se
     }
 
     private Path getPath(K key) {
-        return root.resolve(stringifier.toString(key));
+        return root.resolve(stringifier.toString(key).concat(".json"));
     }
 
     private V read(K key) throws IOException {
-        return ioManager.getObjectReader().read(getPath(key), new ParameterizedTypeReference<V>() {
-        });
+        return read(getPath(key));
     }
 
     private V read(Path path) {

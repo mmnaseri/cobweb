@@ -30,4 +30,9 @@ public class Vertex<I extends Serializable & Comparable<I>> extends Document<I> 
         this.outgoing = outgoing;
     }
 
+    @Override
+    public String toString() {
+        return "{vertex(" + getLabel() + ")}";
+    }
+
 }

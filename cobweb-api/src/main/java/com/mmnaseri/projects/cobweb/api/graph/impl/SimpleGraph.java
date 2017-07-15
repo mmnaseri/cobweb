@@ -3,7 +3,6 @@ package com.mmnaseri.projects.cobweb.api.graph.impl;
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.common.SerializableMap;
 import com.mmnaseri.projects.cobweb.api.common.SerializableSet;
-import com.mmnaseri.projects.cobweb.api.data.ix.DocumentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.IndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.NamedInvertedIndexWrapper;
@@ -11,7 +10,7 @@ import com.mmnaseri.projects.cobweb.api.graph.Graph;
 import com.mmnaseri.projects.cobweb.api.graph.impl.domain.*;
 import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
-import com.mmnaseri.projects.cobweb.api.query.dsl.cond.TagConditionals;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.IdentifierConditional;
 import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
 import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 import com.mmnaseri.projects.cobweb.domain.content.*;
@@ -25,7 +24,6 @@ import java.util.*;
 
 import static com.mmnaseri.projects.cobweb.api.query.dsl.Projections.itself;
 import static com.mmnaseri.projects.cobweb.api.query.dsl.QueryBuilder.from;
-import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.PersistentConditionals.entityId;
 import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.TagConditionals.tagName;
 
 /**
@@ -36,7 +34,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     private static final long serialVersionUID = -1272124666112477285L;
     private final SimpleGraphConfiguration<K> configuration;
-    private final DocumentIndexWrapper<K, Vertex<K>> verticesIndex;
+    private final IndexWrapper<K, VertexMetadata> verticesIndex;
     private final IndexWrapper<K, AttachmentMetadata> attachmentsIndex;
     private final IndexWrapper<K, TagMetadata> tagsIndex;
     private final IndexWrapper<K, EdgeMetadata<K>> edgesIndex;
@@ -51,7 +49,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     public SimpleGraph(SimpleGraphConfiguration<K> configuration) throws IOException {
         this.configuration = configuration;
         final SimpleGraphIndexFactory<K> indexes = configuration.getIndexes();
-        verticesIndex = new DocumentIndexWrapper<>(indexes.vertices());
+        verticesIndex = new IndexWrapper<>(indexes.vertices());
         vertexIncomingIndex = new InvertedIndexWrapper<>(indexes.incomingEdges());
         vertexOutgoingIndex = new InvertedIndexWrapper<>(indexes.outgoingEdges());
         edgesIndex = new IndexWrapper<>(indexes.edges());
@@ -70,19 +68,21 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     }
 
     @Override
-    public Vertex<K> createVertex() {
+    public Vertex<K> createVertex(String label) {
         final Vertex<K> vertex = new Vertex<>();
         vertex.setId(nextId());
+        vertex.setLabel(label);
         vertex.setIncoming(new LinkedList<>());
         vertex.setOutgoing(new LinkedList<>());
         vertex.setAttachments(new HashMap<>());
         vertex.setProperties(new DocumentProperties());
         vertex.setTags(new HashSet<>());
-        return wrap(verticesIndex.save(vertex));
+        verticesIndex.save(vertex.getId(), new VertexMetadata(vertex));
+        return wrap(vertex);
     }
 
     @Override
-    public Edge<K> link(Vertex<K> from, Vertex<K> to) {
+    public Edge<K> link(Vertex<K> from, Vertex<K> to, String label) {
         final Edge<K> edge = new Edge<>();
         edge.setId(nextId());
         edge.setFrom(from);
@@ -90,6 +90,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         edge.setAttachments(new HashMap<>());
         edge.setProperties(new DocumentProperties());
         edge.setTags(new HashSet<>());
+        edge.setLabel(label);
         vertexOutgoingIndex.add(from, edge);
         vertexIncomingIndex.add(to, edge);
         edgesIndex.save(edge.getId(), new EdgeMetadata<>(edge));
@@ -149,7 +150,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     public <D extends Document<K>> D update(D document) {
         if (document instanceof Vertex<?>) {
             //noinspection unchecked
-            verticesIndex.save((Vertex<K>) document);
+            verticesIndex.save(document.getId(), new VertexMetadata((Vertex<K>) document));
         } else if (document instanceof Edge<?>) {
             //noinspection unchecked
             final EdgeMetadata<K> metadata = edgesIndex.read(document.getId(), k -> new EdgeMetadata<>((Edge<K>) document));
@@ -221,7 +222,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     private void deleteVertex(Vertex<K> vertex) {
         final Vertex<K> found = findById(vertex);
         deleteDocument(found);
-        verticesIndex.delete(found);
+        verticesIndex.delete(found.getId());
     }
 
     private void deleteDocument(Document<K> found) {
@@ -383,7 +384,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         } else {
             throw new IllegalStateException();
         }
-        return findOne(from(sources).select(itself()).where(entityId(sources).is(sample.getId().getValue())));
+        return findOne(from(sources).select(itself()).id(sample.getId()));
     }
 
     private class GraphSources {
@@ -416,21 +417,17 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         } else if (Vertex.class.equals(persistentType)) {
             index = verticesIndex;
             reader = (key, value) -> {
-                final Vertex<K> vertex = new Vertex<>();
-                vertex.setId(getConfiguration().getIdentifierFactory().getIdentifier(key));
-                vertex.setTags(Collections.emptySet());
-                vertex.setAttachments(Collections.emptyMap());
-                vertex.setIncoming(Collections.emptyList());
-                vertex.setOutgoing(Collections.emptyList());
-                vertex.setProperties(((DocumentProperties) value));
+                final Vertex<K> vertex = ((VertexMetadata) value).toVertex(key, getConfiguration().getIdentifierFactory());
+//                vertex.setIncoming(vertex.getIncoming().stream().map(this::findById).collect(Collectors.toList()));
+//                vertex.setOutgoing(vertex.getOutgoing().stream().map(this::findById).collect(Collectors.toList()));
                 return (P) vertex;
             };
         } else if (Edge.class.equals(persistentType)) {
             index = edgesIndex;
             reader = (key, value) -> {
                 final Edge<K> edge = ((EdgeMetadata<K>) value).toEdge(key, configuration.getIdentifierFactory());
-                edge.setFrom(wrap(edge.getFrom()));
-                edge.setTo(wrap(edge.getTo()));
+                edge.setFrom(findById(edge.getFrom()));
+                edge.setTo(findById(edge.getTo()));
                 return (P) edge;
             };
         } else {
@@ -441,18 +438,31 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         final Conditional<P> conditional = query.getConditional();
         final ProjectionSpecification<P, R> projectionSpecification = query.getProjectionSpecification();
         int found = 0;
-        for (final K key : keys) {
-            final Serializable value = index.read(key, null);
-            final P converted = wrap(reader.read(key, value));
-            if (conditional.test(converted)) {
-                found++;
+        if (conditional instanceof IdentifierConditional<?, ?>) {
+            final K key = (K) ((IdentifierConditional) conditional).getKey();
+            if (index.getIndex().has(key)) {
+                found ++;
+                final P converted = wrap(reader.read(key, index.read(key, null)));
                 if (project) {
                     result.add(projectionSpecification.project(converted));
                 } else {
                     result.add(converted);
                 }
-                if (max > 0 && found >= max) {
-                    break;
+            }
+        } else {
+            for (final K key : keys) {
+                final Serializable value = index.read(key, null);
+                final P converted = wrap(reader.read(key, value));
+                if (conditional.test(converted)) {
+                    found++;
+                    if (project) {
+                        result.add(projectionSpecification.project(converted));
+                    } else {
+                        result.add(converted);
+                    }
+                    if (max > 0 && found >= max) {
+                        break;
+                    }
                 }
             }
         }

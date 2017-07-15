@@ -39,4 +39,9 @@ public class Tag<I extends Serializable & Comparable<I>> extends Persistent<I> {
         this.documents = documents;
     }
 
+    @Override
+    public String toString() {
+        return "{tag(" + getName() + ")}";
+    }
+
 }

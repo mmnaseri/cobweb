@@ -1,8 +1,7 @@
 package com.mmnaseri.projects.cobweb.api.query.dsl.cond;
 
 import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
-import com.mmnaseri.projects.cobweb.api.query.dsl.ValueConditionalExpression;
-import com.mmnaseri.projects.cobweb.api.query.dsl.impl.DefaultValueConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.DefaultValueConditionalExpression;
 import com.mmnaseri.projects.cobweb.domain.content.Persistent;
 
 import java.io.Serializable;

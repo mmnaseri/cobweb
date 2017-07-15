@@ -29,4 +29,9 @@ public class Attachment<I extends Serializable & Comparable<I>> extends Persiste
         this.anchors = anchors;
     }
 
+    @Override
+    public String toString() {
+        return "{attachment(" + getMime() + ")}";
+    }
+
 }
