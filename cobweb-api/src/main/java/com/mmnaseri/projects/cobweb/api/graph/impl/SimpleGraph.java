@@ -1,6 +1,8 @@
 package com.mmnaseri.projects.cobweb.api.graph.impl;
 
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
+import com.mmnaseri.projects.cobweb.api.common.SerializableMap;
+import com.mmnaseri.projects.cobweb.api.common.SerializableSet;
 import com.mmnaseri.projects.cobweb.api.data.ix.DocumentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.IndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
@@ -278,19 +280,91 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
             return persistent;
         }
         if (persistent instanceof Tag<?>) {
-            return (P) new LazyTag<K>((Tag) persistent, null);
+            final LazyLoader<List<Document<K>>> documentLoader = () -> {
+                final SerializableSet<K> documents = tagDocumentIndex.read(persistent);
+                final List<Document<K>> list = new LinkedList<>();
+                for (K document : documents) {
+                    final Document<K> item = getDocument(document);
+                    list.add(item);
+                }
+                return list;
+            };
+            return (P) new LazyTag<K>((Tag) persistent, documentLoader);
         } else if (persistent instanceof Attachment<?>) {
-            return (P) new LazyAttachment<K>((Attachment) persistent, null);
+            final LazyLoader<Set<Document<K>>> anchorLoader = () -> {
+                final Set<Document<K>> set = new HashSet<>();
+                final SerializableSet<K> anchors = attachmentAnchorsIndex.read(persistent);
+                for (K anchor : anchors) {
+                    set.add(getDocument(anchor));
+                }
+                return set;
+            };
+            return (P) new LazyAttachment<K>((Attachment) persistent, anchorLoader);
         } else if (persistent instanceof Document<?>) {
-            final LazyLoader<Set<Tag<K>>> tagLoader = null;
-            final LazyLoader<Map<String, Attachment<K>>> attachmentLoader = null;
+            final LazyLoader<Set<Tag<K>>> tagLoader = () -> {
+                final SerializableSet<K> tags = documentTagIndex.read(persistent);
+                final Set<Tag<K>> set = new HashSet<>();
+                for (K tag : tags) {
+                    final Tag<K> sample = new Tag<>();
+                    sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(tag));
+                    set.add(findById(sample));
+                }
+                return set;
+            };
+            final LazyLoader<Map<String, Attachment<K>>> attachmentLoader = () -> {
+                final Map<String, Attachment<K>> map = new HashMap<>();
+                final SerializableMap<String, K> attachments = documentAttachmentIndex.read(persistent.getId());
+                for (Map.Entry<String, K> entry : attachments.entrySet()) {
+                    final K id = entry.getValue();
+                    final Attachment<K> sample = new Attachment<>();
+                    sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(id));
+                    map.put(entry.getKey(), findById(sample));
+                }
+                return map;
+            };
             if (persistent instanceof Edge<?>) {
                 return (P) new LazyEdge<K>((Edge) persistent, tagLoader, attachmentLoader);
             } else if (persistent instanceof Vertex<?>) {
-                return (P) new LazyVertex<K>((Vertex) persistent, tagLoader, attachmentLoader, null, null);
+                final LazyLoader<List<Edge<K>>> incomingLoader = () -> {
+                    final SerializableSet<K> edges = vertexIncomingIndex.read(persistent);
+                    final List<Edge<K>> list = new LinkedList<>();
+                    for (K edge : edges) {
+                        final Edge<K> sample = new Edge<>();
+                        sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(edge));
+                        list.add(findById(sample));
+                    }
+                    return list;
+                };
+                final LazyLoader<List<Edge<K>>> outgoingLoader = () -> {
+                    final SerializableSet<K> edges = vertexOutgoingIndex.read(persistent);
+                    final List<Edge<K>> list = new LinkedList<>();
+                    for (K edge : edges) {
+                        final Edge<K> sample = new Edge<>();
+                        sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(edge));
+                        list.add(findById(sample));
+                    }
+                    return list;
+                };
+                return (P) new LazyVertex<K>((Vertex) persistent, tagLoader, attachmentLoader, incomingLoader, outgoingLoader);
             }
         }
         throw new IllegalArgumentException();
+    }
+
+    private Document<K> getDocument(K id) {
+        final Document<K> item;
+        if (verticesIndex.getIndex().has(id)) {
+            final Vertex<K> sample = new Vertex<>();
+            sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(id));
+            item = findById(sample);
+        } else if (edgesIndex.getIndex().has(id)) {
+            final Edge<K> sample = new Edge<>();
+            sample.setId(getConfiguration().getIdentifierFactory().getIdentifier(id));
+            item = findById(sample);
+        } else {
+            throw new IllegalStateException();
+        }
+        return item;
     }
 
     @SuppressWarnings("unchecked")
