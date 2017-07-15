@@ -1,6 +1,7 @@
 package com.mmnaseri.projects.cobweb.api.query.meta.impl;
 
 import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
+import com.mmnaseri.projects.cobweb.api.query.meta.Conditionals;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -27,17 +28,17 @@ public class NamedConditional<P> implements Conditional<P> {
 
     @Override
     public NamedConditional<P> and(Conditional<P> other) {
-        return new NamedConditional<>("(" + getName() + ") && (" + getOtherName(other) + ")", value -> test(value) && other.test(value));
+        return new NamedConditional<>("(" + getName() + ") && (" + getOtherName(other) + ")", value -> Conditionals.and(this, other).test(value));
     }
 
     @Override
     public NamedConditional<P> not() {
-        return new NamedConditional<>("!(" + getName() + ")", value -> !test(value));
+        return new NamedConditional<>("!(" + getName() + ")", value -> Conditionals.not(this).test(value));
     }
 
     @Override
     public NamedConditional<P> or(Conditional<P> other) {
-        return new NamedConditional<>("(" + getName() + ") || (" + getOtherName(other) + ")", value -> test(value) || other.test(value));
+        return new NamedConditional<>("(" + getName() + ") || (" + getOtherName(other) + ")", value -> Conditionals.or(this, other).test(value));
     }
 
     @Override

@@ -9,15 +9,15 @@ public interface Conditional<P> {
     boolean test(P value);
 
     default Conditional<P> and(Conditional<P> other) {
-        return value -> test(value) && other.test(value);
+        return Conditionals.and(this, other);
     }
 
     default Conditional<P> not() {
-        return value -> !test(value);
+        return Conditionals.not(this);
     }
 
     default Conditional<P> or(Conditional<P> other) {
-        return value -> test(value) || other.test(value);
+        return Conditionals.or(this, other);
     }
 
 }
