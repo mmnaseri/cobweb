@@ -20,4 +20,9 @@ public class Identifier<I extends Serializable & Comparable<I>> implements Seria
         return value;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(getValue());
+    }
+
 }

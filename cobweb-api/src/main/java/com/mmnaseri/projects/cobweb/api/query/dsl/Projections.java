@@ -2,7 +2,6 @@ package com.mmnaseri.projects.cobweb.api.query.dsl;
 
 import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 import com.mmnaseri.projects.cobweb.domain.content.Persistent;
-import com.mmnaseri.projects.cobweb.domain.content.Tag;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ public final class Projections {
     }
 
     public static <K extends Serializable & Comparable<K>, P extends Persistent<K>> ProjectionSpecification<P, P> itself() {
-        return null;
+        return p -> p;
     }
 
 }

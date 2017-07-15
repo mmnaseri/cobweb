@@ -11,6 +11,7 @@ import com.mmnaseri.projects.cobweb.api.graph.Graph;
 import com.mmnaseri.projects.cobweb.api.graph.impl.domain.*;
 import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.TagConditionals;
 import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
 import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 import com.mmnaseri.projects.cobweb.domain.content.*;
@@ -25,6 +26,7 @@ import java.util.*;
 import static com.mmnaseri.projects.cobweb.api.query.dsl.Projections.itself;
 import static com.mmnaseri.projects.cobweb.api.query.dsl.QueryBuilder.from;
 import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.PersistentConditionals.entityId;
+import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.TagConditionals.tagName;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -96,8 +98,8 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     @Override
     public Tag<K> createTag(String name, String description) {
-        if (exists(null)) {
-            throw new IllegalStateException();
+        if (exists(from(sources.tags).select(itself()).where(tagName(sources.tags).is(name)))) {
+            throw new IllegalStateException("Tag <" + name + "> already exists");
         }
         final Tag<K> tag = new Tag<>();
         tag.setId(nextId());
