@@ -2,13 +2,15 @@ package com.mmnaseri.projects.cobweb.api.graph.impl;
 
 import com.mmnaseri.projects.cobweb.api.common.ParameterizedTypeReference;
 import com.mmnaseri.projects.cobweb.api.data.ix.DocumentIndexWrapper;
+import com.mmnaseri.projects.cobweb.api.data.ix.IndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.InvertedIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.data.ix.NamedInvertedIndexWrapper;
-import com.mmnaseri.projects.cobweb.api.data.ix.PersistentIndexWrapper;
 import com.mmnaseri.projects.cobweb.api.graph.Graph;
 import com.mmnaseri.projects.cobweb.api.graph.impl.domain.*;
 import com.mmnaseri.projects.cobweb.api.query.Query;
 import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
+import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
+import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 import com.mmnaseri.projects.cobweb.domain.content.*;
 import com.mmnaseri.projects.cobweb.domain.id.Identifier;
 
@@ -31,9 +33,9 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     private static final long serialVersionUID = -1272124666112477285L;
     private final SimpleGraphConfiguration<K> configuration;
     private final DocumentIndexWrapper<K, Vertex<K>> verticesIndex;
-    private final DocumentIndexWrapper<K, Edge<K>> edgesIndex;
-    private final PersistentIndexWrapper<K, Attachment<K>> attachmentsIndex;
-    private final PersistentIndexWrapper<K, Tag<K>> tagsIndex;
+    private final IndexWrapper<K, AttachmentMetadata> attachmentsIndex;
+    private final IndexWrapper<K, TagMetadata> tagsIndex;
+    private final IndexWrapper<K, EdgeMetadata<K>> edgesIndex;
     private final InvertedIndexWrapper<K> vertexIncomingIndex;
     private final InvertedIndexWrapper<K> vertexOutgoingIndex;
     private final InvertedIndexWrapper<K> attachmentAnchorsIndex;
@@ -48,9 +50,9 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         verticesIndex = new DocumentIndexWrapper<>(indexes.vertices());
         vertexIncomingIndex = new InvertedIndexWrapper<>(indexes.incomingEdges());
         vertexOutgoingIndex = new InvertedIndexWrapper<>(indexes.outgoingEdges());
-        edgesIndex = new DocumentIndexWrapper<>(indexes.edges());
-        tagsIndex = new PersistentIndexWrapper<>(indexes.tags());
-        attachmentsIndex = new PersistentIndexWrapper<>(indexes.attachments());
+        edgesIndex = new IndexWrapper<>(indexes.edges());
+        tagsIndex = new IndexWrapper<>(indexes.tags());
+        attachmentsIndex = new IndexWrapper<>(indexes.attachments());
         documentAttachmentIndex = new NamedInvertedIndexWrapper<>(indexes.documentAttachments());
         attachmentAnchorsIndex = new InvertedIndexWrapper<>(indexes.anchors());
         documentTagIndex = new InvertedIndexWrapper<>(indexes.documentTags());
@@ -86,7 +88,8 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         edge.setTags(new HashSet<>());
         vertexOutgoingIndex.add(from, edge);
         vertexIncomingIndex.add(to, edge);
-        return wrap(edgesIndex.save(edge));
+        edgesIndex.save(edge.getId(), new EdgeMetadata<>(edge));
+        return wrap(edge);
     }
 
     @Override
@@ -98,7 +101,8 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         tag.setId(nextId());
         tag.setName(name);
         tag.setDescription(description);
-        return wrap(tagsIndex.save(tag));
+        tagsIndex.save(tag.getId(), new TagMetadata(tag));
+        return wrap(tag);
     }
 
     @Override
@@ -109,7 +113,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         final Tag<K> found = findById(tag);
         found.setName(newName);
         found.setDocuments(Collections.emptyList());
-        tagsIndex.save(found);
+        tagsIndex.save(tag.getId(), new TagMetadata(tag));
     }
 
     @Override
@@ -117,7 +121,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         final Tag<K> found = findById(tag);
         found.setDescription(newDescription);
         found.setDocuments(Collections.emptyList());
-        tagsIndex.save(found);
+        tagsIndex.save(tag.getId(), new TagMetadata(tag));
     }
 
     @Override
@@ -127,7 +131,8 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         attachment.setAnchors(new HashSet<>());
         attachment.setMime(mime);
         copyAttachment(attachment, path);
-        return wrap(attachmentsIndex.save(attachment));
+        attachmentsIndex.save(attachment.getId(), new AttachmentMetadata(attachment));
+        return wrap(attachment);
     }
 
     @Override
@@ -138,11 +143,25 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     @Override
     public <D extends Document<K>> D update(D document) {
-        final DocumentProperties properties = document.getProperties();
         if (document instanceof Vertex<?>) {
-            verticesIndex.save(document.getId(), properties);
+            //noinspection unchecked
+            verticesIndex.save((Vertex<K>) document);
         } else if (document instanceof Edge<?>) {
-            edgesIndex.save(document.getId(), properties);
+            //noinspection unchecked
+            final EdgeMetadata<K> metadata = edgesIndex.read(document.getId(), k -> new EdgeMetadata<>((Edge<K>) document));
+            if (((Edge) document).getFrom() != null && ((Edge) document).getTo() != null) {
+                //noinspection unchecked
+                if (!metadata.getFrom().equals(((Edge) document).getFrom().getId().getValue())) {
+                    //noinspection unchecked
+                    metadata.setFrom((K) ((Edge) document).getFrom().getId().getValue());
+                }
+                if (!metadata.getTo().equals(((Edge) document).getTo().getId().getValue())) {
+                    //noinspection unchecked
+                    metadata.setTo((K) ((Edge) document).getTo().getId().getValue());
+                }
+            }
+            metadata.setProperties(document.getProperties());
+            edgesIndex.save(document.getId(), metadata);
         } else {
             throw new IllegalArgumentException();
         }
@@ -192,7 +211,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
         vertexOutgoingIndex.remove(found.getFrom(), found);
         vertexIncomingIndex.remove(found.getTo(), found);
         deleteDocument(found);
-        edgesIndex.delete(found);
+        edgesIndex.delete(found.getId());
     }
 
     private void deleteVertex(Vertex<K> vertex) {
@@ -210,26 +229,26 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     @Override
     public <P extends Persistent<K>, R> List<R> find(Query<P, R> query) {
-        //todo
-        return null;
+        final List<?> list = query(query, 0, -1, true);
+        //noinspection unchecked
+        return (List<R>) list;
     }
 
     @Override
     public <P extends Persistent<K>, R> long count(Query<P, R> query) {
-        //todo
-        return 0;
+        return query(query, 0, -1, false).size();
     }
 
     @Override
     public <P extends Persistent<K>, R> boolean exists(Query<P, R> query) {
-        //todo
-        return false;
+        return !query(query, 0, 1, false).isEmpty();
     }
 
     @Override
     public <P extends Persistent<K>, R> R findOne(Query<P, R> query) {
-        //todo
-        return null;
+        final List<?> list = query(query, 1, 1, true);
+        //noinspection unchecked
+        return (R) list.get(0);
     }
 
     private Identifier<K> nextId() {
@@ -254,7 +273,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
     }
 
     @SuppressWarnings("unchecked")
-    private <P extends Persistent<K>> P wrap(P persistent){
+    private <P extends Persistent<K>> P wrap(P persistent) {
         if (persistent instanceof LazyPersistent) {
             return persistent;
         }
@@ -266,7 +285,7 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
             final LazyLoader<Set<Tag<K>>> tagLoader = null;
             final LazyLoader<Map<String, Attachment<K>>> attachmentLoader = null;
             if (persistent instanceof Edge<?>) {
-                return (P) new LazyEdge<K>((Edge) persistent, tagLoader, attachmentLoader, null, null);
+                return (P) new LazyEdge<K>((Edge) persistent, tagLoader, attachmentLoader);
             } else if (persistent instanceof Vertex<?>) {
                 return (P) new LazyVertex<K>((Vertex) persistent, tagLoader, attachmentLoader, null, null);
             }
@@ -304,6 +323,72 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
         private final Sources<K, Tag<K>> tags = Sources.tags(new ParameterizedTypeReference<K>() {
         });
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private <P extends Persistent<K>, R> List<?> query(Query<P, R> query, int min, int max, boolean project) {
+        final Class<? extends Persistent> persistentType = query.getSources().getPersistentType();
+        final IndexWrapper<K, ? extends Serializable> index;
+        final Reader<K, Serializable, P> reader;
+        if (Tag.class.equals(persistentType)) {
+            index = tagsIndex;
+            reader = (key, value) -> (P) ((TagMetadata) value).toTag(getConfiguration().getIdentifierFactory().getIdentifier(key));
+        } else if (Attachment.class.equals(persistentType)) {
+            index = attachmentsIndex;
+            reader = (key, value) -> (P) ((AttachmentMetadata) value).toAttachment(getConfiguration().getIdentifierFactory().getIdentifier(key));
+        } else if (Vertex.class.equals(persistentType)) {
+            index = verticesIndex;
+            reader = (key, value) -> {
+                final Vertex<K> vertex = new Vertex<>();
+                vertex.setId(getConfiguration().getIdentifierFactory().getIdentifier(key));
+                vertex.setTags(Collections.emptySet());
+                vertex.setAttachments(Collections.emptyMap());
+                vertex.setIncoming(Collections.emptyList());
+                vertex.setOutgoing(Collections.emptyList());
+                vertex.setProperties(((DocumentProperties) value));
+                return (P) vertex;
+            };
+        } else if (Edge.class.equals(persistentType)) {
+            index = edgesIndex;
+            reader = (key, value) -> {
+                final Edge<K> edge = ((EdgeMetadata<K>) value).toEdge(key, configuration.getIdentifierFactory());
+                edge.setFrom(wrap(edge.getFrom()));
+                edge.setTo(wrap(edge.getTo()));
+                return (P) edge;
+            };
+        } else {
+            throw new IllegalStateException();
+        }
+        final List<K> keys = index.getIndex().keys();
+        final List<Object> result = new LinkedList<>();
+        final Conditional<P> conditional = query.getConditional();
+        final ProjectionSpecification<P, R> projectionSpecification = query.getProjectionSpecification();
+        int found = 0;
+        for (final K key : keys) {
+            final Serializable value = index.read(key, null);
+            final P converted = wrap(reader.read(key, value));
+            if (conditional.test(converted)) {
+                found++;
+                if (project) {
+                    result.add(projectionSpecification.project(converted));
+                } else {
+                    result.add(converted);
+                }
+                if (max > 0 && found >= max) {
+                    break;
+                }
+            }
+        }
+        if (found < min) {
+            throw new IllegalStateException();
+        }
+        return result;
+    }
+
+    private interface Reader<K extends Serializable & Comparable<K>, E, P extends Persistent<K>> {
+
+        P read(K key, E value);
 
     }
 

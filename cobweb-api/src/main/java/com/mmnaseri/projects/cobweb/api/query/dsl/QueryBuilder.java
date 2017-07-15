@@ -15,13 +15,15 @@ import java.io.Serializable;
 public class QueryBuilder<K extends Serializable & Comparable<K>, P extends Persistent<K>, R> implements WhereClause<K, P, R>, ProjectionSpecifier<K, P> {
 
     public static <K extends Serializable & Comparable<K>, P extends Persistent<K>> ProjectionSpecifier<K, P> from(Sources<K, P> sources) {
-        return new QueryBuilder<>(source -> source, null);
+        return new QueryBuilder<>(sources, source -> source, null);
     }
 
+    private final Sources<?, ?> sources;
     private final ProjectionSpecification<P, R> projectionSpecification;
     private final ConditionalExpression<K, P> expression;
 
-    private QueryBuilder(ProjectionSpecification<P, R> projectionSpecification, ConditionalExpression<K, P> expression) {
+    private QueryBuilder(Sources<?, ?> sources, ProjectionSpecification<P, R> projectionSpecification, ConditionalExpression<K, P> expression) {
+        this.sources = sources;
         this.projectionSpecification = projectionSpecification;
         this.expression = expression;
     }
@@ -29,7 +31,7 @@ public class QueryBuilder<K extends Serializable & Comparable<K>, P extends Pers
     @Override
     public Query<P, R> where(ConditionalExpression<K, P> expression) {
         final Conditional<P> conditional = expression.getConditional();
-        return new ImmutableQuery<>(conditional, projectionSpecification);
+        return new ImmutableQuery<>(sources, conditional, projectionSpecification);
     }
 
     @Override
@@ -39,17 +41,24 @@ public class QueryBuilder<K extends Serializable & Comparable<K>, P extends Pers
 
     @Override
     public <S> WhereClause<K, P, S> select(ProjectionSpecification<P, S> specification) {
-        return new QueryBuilder<>(specification, expression);
+        return new QueryBuilder<>(sources, specification, expression);
     }
 
     private static final class ImmutableQuery<S, R> implements Query<S, R> {
 
+        private final Sources<?, ?> sources;
         private final Conditional<S> conditional;
         private final ProjectionSpecification<S, R> projectionSpecification;
 
-        private ImmutableQuery(Conditional<S> conditional, ProjectionSpecification<S, R> projectionSpecification) {
+        private ImmutableQuery(Sources<?, ?> sources, Conditional<S> conditional, ProjectionSpecification<S, R> projectionSpecification) {
+            this.sources = sources;
             this.conditional = conditional;
             this.projectionSpecification = projectionSpecification;
+        }
+
+        @Override
+        public Sources<?, ?> getSources() {
+            return sources;
         }
 
         @Override

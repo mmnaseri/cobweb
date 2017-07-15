@@ -8,9 +8,7 @@ import com.mmnaseri.projects.cobweb.api.data.Stringifier;
 import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexConfiguration;
 import com.mmnaseri.projects.cobweb.api.data.impl.DirectoryIndexFactory;
 import com.mmnaseri.projects.cobweb.api.io.ObjectInputOutputManager;
-import com.mmnaseri.projects.cobweb.domain.content.Attachment;
 import com.mmnaseri.projects.cobweb.domain.content.DocumentProperties;
-import com.mmnaseri.projects.cobweb.domain.content.Tag;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -25,15 +23,15 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
     private final ObjectInputOutputManager inputOutputManager;
     private final Stringifier<K> stringifier;
     private final Index<K, DocumentProperties> vertices;
-    private final Index<K, DocumentProperties> edges;
-    private final Index<K, Tag<K>> tags;
-    private final Index<K, Attachment<K>> attachments;
+    private final Index<K, TagMetadata> tags;
+    private final Index<K, AttachmentMetadata> attachments;
     private final Index<K, SerializableSet<K>> incomingEdges;
     private final Index<K, SerializableSet<K>> outgoingEdges;
     private final Index<K, SerializableMap<String, K>> documentAttachments;
     private final Index<K, SerializableSet<K>> anchors;
     private final Index<K, SerializableSet<K>> documentTags;
     private final Index<K, SerializableSet<K>> tagDocuments;
+    private final Index<K, EdgeMetadata<K>> edges;
 
     SimpleGraphIndexFactory(Path root, ObjectInputOutputManager inputOutputManager, Stringifier<K> stringifier) {
         this.root = root;
@@ -66,15 +64,11 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
         return vertices;
     }
 
-    Index<K, DocumentProperties> edges() {
-        return edges;
-    }
-
-    Index<K, Tag<K>> tags() {
+    Index<K, TagMetadata> tags() {
         return tags;
     }
 
-    Index<K, Attachment<K>> attachments() {
+    Index<K, AttachmentMetadata> attachments() {
         return attachments;
     }
 
@@ -102,4 +96,7 @@ class SimpleGraphIndexFactory<K extends Serializable & Comparable<K>> {
         return tagDocuments;
     }
 
+    Index<K, EdgeMetadata<K>> edges() {
+        return edges;
+    }
 }

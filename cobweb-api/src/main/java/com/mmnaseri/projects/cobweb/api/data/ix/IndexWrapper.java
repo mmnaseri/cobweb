@@ -44,6 +44,9 @@ public class IndexWrapper<K extends Serializable & Comparable<K>, V extends Seri
                 throw new IllegalStateException(e);
             }
         }
+        if (defaultValue == null) {
+            throw new IllegalStateException();
+        }
         return defaultValue.apply(key);
     }
 

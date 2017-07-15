@@ -1,5 +1,6 @@
 package com.mmnaseri.projects.cobweb.api.query;
 
+import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
 import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
 import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
 
@@ -8,6 +9,8 @@ import com.mmnaseri.projects.cobweb.api.query.meta.ProjectionSpecification;
  * @since 1.0 (7/12/17, 7:29 PM)
  */
 public interface Query<S, R> {
+
+    Sources<?, ?> getSources();
 
     Conditional<S> getConditional();
 

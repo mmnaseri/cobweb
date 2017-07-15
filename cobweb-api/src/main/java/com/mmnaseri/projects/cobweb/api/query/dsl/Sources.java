@@ -11,39 +11,46 @@ import java.io.Serializable;
  */
 public final class Sources<K extends Serializable & Comparable<K>, P extends Persistent<K>> {
 
-    private Sources() {
+    private final Class<? extends Persistent> persistentType;
+
+    private Sources(Class<? extends Persistent> persistentType) {
+        this.persistentType = persistentType;
+    }
+
+    public Class<? extends Persistent> getPersistentType() {
+        return persistentType;
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Tag<K>> tags(Class<K> type) {
-        return new Sources<>();
+        return new Sources<>(Tag.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Attachment<K>> attachments(Class<K> type) {
-        return new Sources<>();
+        return new Sources<>(Attachment.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Edge<K>> edges(Class<K> type) {
-        return new Sources<>();
+        return new Sources<>(Edge.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Vertex<K>> vertices(Class<K> type) {
-        return new Sources<>();
+        return new Sources<>(Vertex.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Tag<K>> tags(ParameterizedTypeReference<K> type) {
-        return new Sources<>();
+        return new Sources<>(Tag.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Attachment<K>> attachments(ParameterizedTypeReference<K> type) {
-        return new Sources<>();
+        return new Sources<>(Attachment.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Edge<K>> edges(ParameterizedTypeReference<K> type) {
-        return new Sources<>();
+        return new Sources<>(Edge.class);
     }
 
     public static <K extends Serializable & Comparable<K>> Sources<K, Vertex<K>> vertices(ParameterizedTypeReference<K> type) {
-        return new Sources<>();
+        return new Sources<>(Vertex.class);
     }
 
 }

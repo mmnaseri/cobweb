@@ -16,13 +16,9 @@ public class LazyEdge<K extends Serializable & Comparable<K>> extends Edge<K> im
     private static final long serialVersionUID = -4807540548814226339L;
     private final Edge<K> edge;
     private final LazyDocument<K> document;
-    private final LazyLoader<Vertex<K>> fromLoader;
-    private final LazyLoader<Vertex<K>> toLoader;
 
-    public LazyEdge(Edge<K> edge, LazyLoader<Set<Tag<K>>> tagLoader, LazyLoader<Map<String, Attachment<K>>> attachmentLoader, LazyLoader<Vertex<K>> fromLoader, LazyLoader<Vertex<K>> toLoader) {
+    public LazyEdge(Edge<K> edge, LazyLoader<Set<Tag<K>>> tagLoader, LazyLoader<Map<String, Attachment<K>>> attachmentLoader) {
         this.edge = edge;
-        this.fromLoader = fromLoader;
-        this.toLoader = toLoader;
         document = new LazyDocument<>(edge, tagLoader, attachmentLoader);
     }
 
@@ -68,7 +64,7 @@ public class LazyEdge<K extends Serializable & Comparable<K>> extends Edge<K> im
 
     @Override
     public Vertex<K> getFrom() {
-        return fromLoader.load();
+        return edge.getFrom();
     }
 
     @Override
@@ -78,7 +74,7 @@ public class LazyEdge<K extends Serializable & Comparable<K>> extends Edge<K> im
 
     @Override
     public Vertex<K> getTo() {
-        return toLoader.load();
+        return edge.getTo();
     }
 
     @Override
