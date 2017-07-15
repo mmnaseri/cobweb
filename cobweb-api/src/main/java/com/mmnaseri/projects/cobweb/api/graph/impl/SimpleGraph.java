@@ -17,6 +17,8 @@ import com.mmnaseri.projects.cobweb.domain.content.*;
 import com.mmnaseri.projects.cobweb.domain.id.Identifier;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,18 +35,18 @@ import static com.mmnaseri.projects.cobweb.api.query.dsl.cond.TagConditionals.ta
 public class SimpleGraph<K extends Serializable & Comparable<K>> implements Graph<K, SimpleGraphConfiguration<K>> {
 
     private static final long serialVersionUID = -1272124666112477285L;
-    private final SimpleGraphConfiguration<K> configuration;
-    private final IndexWrapper<K, VertexMetadata> verticesIndex;
-    private final IndexWrapper<K, AttachmentMetadata> attachmentsIndex;
-    private final IndexWrapper<K, TagMetadata> tagsIndex;
-    private final IndexWrapper<K, EdgeMetadata<K>> edgesIndex;
-    private final InvertedIndexWrapper<K> vertexIncomingIndex;
-    private final InvertedIndexWrapper<K> vertexOutgoingIndex;
-    private final InvertedIndexWrapper<K> attachmentAnchorsIndex;
-    private final InvertedIndexWrapper<K> documentTagIndex;
-    private final InvertedIndexWrapper<K> tagDocumentIndex;
-    private final NamedInvertedIndexWrapper<K> documentAttachmentIndex;
-    private final GraphSources sources;
+    private SimpleGraphConfiguration<K> configuration;
+    private IndexWrapper<K, VertexMetadata> verticesIndex;
+    private IndexWrapper<K, AttachmentMetadata> attachmentsIndex;
+    private IndexWrapper<K, TagMetadata> tagsIndex;
+    private IndexWrapper<K, EdgeMetadata<K>> edgesIndex;
+    private InvertedIndexWrapper<K> vertexIncomingIndex;
+    private InvertedIndexWrapper<K> vertexOutgoingIndex;
+    private InvertedIndexWrapper<K> attachmentAnchorsIndex;
+    private InvertedIndexWrapper<K> documentTagIndex;
+    private InvertedIndexWrapper<K> tagDocumentIndex;
+    private NamedInvertedIndexWrapper<K> documentAttachmentIndex;
+    private GraphSources sources;
 
     public SimpleGraph(SimpleGraphConfiguration<K> configuration) throws IOException {
         this.configuration = configuration;
@@ -476,6 +478,27 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
         P read(K key, E value);
 
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeObject(configuration);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        //noinspection unchecked
+        configuration = (SimpleGraphConfiguration<K>) in.readObject();
+        final SimpleGraphIndexFactory<K> indexes = configuration.getIndexes();
+        verticesIndex = new IndexWrapper<>(indexes.vertices());
+        vertexIncomingIndex = new InvertedIndexWrapper<>(indexes.incomingEdges());
+        vertexOutgoingIndex = new InvertedIndexWrapper<>(indexes.outgoingEdges());
+        edgesIndex = new IndexWrapper<>(indexes.edges());
+        tagsIndex = new IndexWrapper<>(indexes.tags());
+        attachmentsIndex = new IndexWrapper<>(indexes.attachments());
+        documentAttachmentIndex = new NamedInvertedIndexWrapper<>(indexes.documentAttachments());
+        attachmentAnchorsIndex = new InvertedIndexWrapper<>(indexes.anchors());
+        documentTagIndex = new InvertedIndexWrapper<>(indexes.documentTags());
+        tagDocumentIndex = new InvertedIndexWrapper<>(indexes.tagDocuments());
+        sources = new GraphSources();
     }
 
 }
