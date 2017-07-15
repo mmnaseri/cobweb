@@ -26,7 +26,7 @@ public class DefaultEdgeConditionalExpression<K extends Serializable & Comparabl
 
     @Override
     public ConditionalExpression<K, P> matches(Predicate<Edge<K>> predicate) {
-        return setConditional(subject + " matches (predicate)", value -> valueReader.read(value).stream().allMatch(predicate));
+        return setConditional(subject + " matches (predicate)", value -> valueReader.read(value).stream().anyMatch(predicate));
     }
 
 }
