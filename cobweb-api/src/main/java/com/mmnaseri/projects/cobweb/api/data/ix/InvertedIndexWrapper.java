@@ -21,14 +21,6 @@ public class InvertedIndexWrapper<K extends Serializable & Comparable<K>> extend
         return super.read(key, SerializableSet::create);
     }
 
-    public SerializableSet<K> read(Identifier<K> key) {
-        return super.read(key, SerializableSet::create);
-    }
-
-    public SerializableSet<K> read(Persistent<K> key) {
-        return read(key.getId());
-    }
-
     public K remove(K key, K reverse) {
         final SerializableSet<K> values = read(key);
         values.remove(reverse);

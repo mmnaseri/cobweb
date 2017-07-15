@@ -23,10 +23,6 @@ public class NamedInvertedIndexWrapper<K extends Serializable & Comparable<K>> e
         return super.read(key, k -> new SerializableMap<>());
     }
 
-    public SerializableMap<String, K> read(Identifier<K> key) {
-        return super.read(key, k -> new SerializableMap<>());
-    }
-
     public void put(Persistent<K> key, String name, Persistent<K> reverse) {
         final SerializableMap<String, K> values = read(key.getId().getValue());
         values.put(name, reverse.getId().getValue());

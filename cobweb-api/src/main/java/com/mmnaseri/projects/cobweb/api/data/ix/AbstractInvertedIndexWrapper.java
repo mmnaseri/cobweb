@@ -33,7 +33,13 @@ public abstract class AbstractInvertedIndexWrapper<K extends Serializable & Comp
 
     public abstract V read(K key);
 
-    public abstract V read(Identifier<K> key);
+    public V read(Identifier<K> key) {
+        return read(key.getValue());
+    }
+
+    public V read(Persistent<K> persistent) {
+        return read(persistent.getId());
+    }
 
     public void remove(Persistent<K> key, Persistent<K> reverse) {
         remove(key.getId().getValue(), reverse.getId().getValue());
