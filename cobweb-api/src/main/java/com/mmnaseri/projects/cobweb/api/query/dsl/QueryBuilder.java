@@ -88,6 +88,11 @@ public class QueryBuilder<K extends Serializable & Comparable<K>, P extends Pers
             return projectionSpecification;
         }
 
+        @Override
+        public String toString() {
+            return "find " + sources.getPersistentType().getSimpleName().toLowerCase() + " where: " + getConditional();
+        }
+
     }
 
 }
