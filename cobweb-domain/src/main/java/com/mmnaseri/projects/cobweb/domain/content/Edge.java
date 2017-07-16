@@ -29,8 +29,8 @@ public class Edge<I extends Serializable & Comparable<I>> extends Document<I> {
     }
 
     @Override
-    public String toString() {
-        return "{edge(" + getLabel() + ")}";
+    public String mnemonic() {
+        return "edge";
     }
 
 }

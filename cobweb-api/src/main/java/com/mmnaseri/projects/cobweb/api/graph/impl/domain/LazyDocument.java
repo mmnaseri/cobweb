@@ -39,7 +39,9 @@ public class LazyDocument<K extends Serializable & Comparable<K>> extends Docume
 
     @Override
     public Set<Tag<K>> getTags() {
-        return tagLoader.load();
+        final Set<Tag<K>> tags = tagLoader.load();
+        setTags(tags);
+        return tags;
     }
 
     @Override
@@ -75,6 +77,11 @@ public class LazyDocument<K extends Serializable & Comparable<K>> extends Docume
     @Override
     public void setLabel(String label) {
         document.setLabel(label);
+    }
+
+    @Override
+    public String mnemonic() {
+        return document.mnemonic();
     }
 
     @Override

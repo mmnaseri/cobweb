@@ -2,6 +2,7 @@ package com.mmnaseri.projects.cobweb.api.query.dsl.cond;
 
 import com.mmnaseri.projects.cobweb.api.query.dsl.Sources;
 import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.DefaultDocumentTagsConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl.DefaultStringConditionalExpression;
 import com.mmnaseri.projects.cobweb.domain.content.Document;
 
 import java.io.Serializable;
@@ -17,7 +18,11 @@ public final class DocumentConditionals {
     }
 
     public static <K extends Serializable & Comparable<K>, P extends Document<K>> DocumentTagsConditionalExpression<K, P> documentTags(Sources<K, P> sources) {
-        return new DefaultDocumentTagsConditionalExpression<>("document.tags");
+        return new DefaultDocumentTagsConditionalExpression<>("tags");
+    }
+
+    public static <K extends Serializable & Comparable<K>, P extends Document<K>> StringConditionalExpression<K, P> documentLabel(Sources<K, P> sources) {
+        return new DefaultStringConditionalExpression<>("label", Document::getLabel);
     }
 
 

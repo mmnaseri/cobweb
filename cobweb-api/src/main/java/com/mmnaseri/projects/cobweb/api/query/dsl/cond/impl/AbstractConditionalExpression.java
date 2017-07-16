@@ -45,4 +45,9 @@ public abstract class AbstractConditionalExpression<K extends Serializable & Com
         return new SimpleConditionalExpression<>(getConditional()).orNot(expression);
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(getConditional());
+    }
+
 }

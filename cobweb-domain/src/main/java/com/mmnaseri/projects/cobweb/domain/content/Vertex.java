@@ -31,8 +31,8 @@ public class Vertex<I extends Serializable & Comparable<I>> extends Document<I> 
     }
 
     @Override
-    public String toString() {
-        return "{vertex(" + getLabel() + ")}";
+    public String mnemonic() {
+        return "vertex";
     }
 
 }

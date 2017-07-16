@@ -21,7 +21,7 @@ public class DefaultDocumentTagsConditionalExpression<K extends Serializable & C
 
     @Override
     public ConditionalExpression<K, P> contains(String tagName) {
-        return setConditional(subject + "#" + tagName, value ->
+        return setConditional(subject + " has " + tagName, value ->
                 value.getTags().stream().anyMatch(
                         tag -> tag.getName().equals(tagName)
                 )
@@ -30,17 +30,17 @@ public class DefaultDocumentTagsConditionalExpression<K extends Serializable & C
 
     @Override
     public ConditionalExpression<K, P> contains(Tag<K> tag) {
-        return setConditional(subject + "#" + tag.getName(), value -> value.getTags().stream().anyMatch(t -> tag.getId().getValue().equals(t.getId().getValue())));
+        return setConditional(subject + " has " + tag.getName(), value -> value.getTags().stream().anyMatch(t -> tag.getId().getValue().equals(t.getId().getValue())));
     }
 
     @Override
     public ConditionalExpression<K, P> doesNotContain(String tagName) {
-        return setConditional(subject + "!#" + tagName, value -> value.getTags().stream().noneMatch(tag -> tag.getName().equals(tagName)));
+        return setConditional(subject + " !has " + tagName, value -> value.getTags().stream().noneMatch(tag -> tag.getName().equals(tagName)));
     }
 
     @Override
     public ConditionalExpression<K, P> doesNotContain(Tag<K> tag) {
-        return setConditional(subject + "!#" + tag.getName(), value -> value.getTags().stream().noneMatch(t -> tag.getId().getValue().equals(t.getId().getValue())));
+        return setConditional(subject + " !has " + tag.getName(), value -> value.getTags().stream().noneMatch(t -> tag.getId().getValue().equals(t.getId().getValue())));
     }
 
 }

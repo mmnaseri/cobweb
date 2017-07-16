@@ -17,7 +17,7 @@ public final class PersistentConditionals {
     }
 
     public static <K extends Serializable & Comparable<K>, P extends Persistent<K>> ValueConditionalExpression<K, P, K> entityId(Sources<K, P> sources) {
-        return new DefaultValueConditionalExpression<>("entity.id", object -> object.getId().getValue());
+        return new DefaultValueConditionalExpression<>("id", object -> object.getId().getValue());
     }
 
 }

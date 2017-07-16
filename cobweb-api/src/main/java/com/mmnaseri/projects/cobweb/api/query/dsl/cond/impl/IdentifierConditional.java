@@ -28,7 +28,7 @@ public class IdentifierConditional<K extends Serializable & Comparable<K>, P ext
 
     @Override
     public String toString() {
-        return "entity.id == " + key;
+        return "id == " + key;
     }
 
 }

@@ -17,7 +17,7 @@ public final class VertexConditionals {
     }
 
     public static <K extends Serializable & Comparable<K>, P extends Vertex<K>> EdgeConditionalExpression<K, P> incomingEdges(Sources<K, P> sources) {
-        return new DefaultEdgeConditionalExpression<>("vertex.incomingEdges", Vertex::getIncoming);
+        return new DefaultEdgeConditionalExpression<>("incomingEdges", Vertex::getIncoming);
     }
 
 }

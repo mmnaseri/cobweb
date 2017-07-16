@@ -1,6 +1,7 @@
 package com.mmnaseri.projects.cobweb.domain.content;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,6 +47,15 @@ public abstract class Document<I extends Serializable & Comparable<I>> extends P
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public abstract String mnemonic();
+
+    @Override
+    public String toString() {
+        return "{" + mnemonic() + "(" + getLabel() + ")[" +
+                (getTags() == null ? Collections.<Tag<I>>emptySet() : getTags()).stream().map(tag -> "#" + tag.getName()).reduce((a, b) -> a + "," + b).orElse("")
+                + "]}";
     }
 
 }

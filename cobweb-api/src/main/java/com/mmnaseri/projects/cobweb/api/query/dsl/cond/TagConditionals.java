@@ -17,11 +17,11 @@ public final class TagConditionals {
     }
 
     public static <K extends Serializable & Comparable<K>> StringConditionalExpression<K, Tag<K>> tagName(Sources<K, Tag<K>> sources) {
-        return new DefaultStringConditionalExpression<>("tag.name", Tag::getName);
+        return new DefaultStringConditionalExpression<>("name", Tag::getName);
     }
 
     public static <K extends Serializable & Comparable<K>> StringConditionalExpression<K, Tag<K>> tagDescription(Sources<K, Tag<K>> sources) {
-        return new DefaultStringConditionalExpression<>("tag.description", Tag::getDescription);
+        return new DefaultStringConditionalExpression<>("description", Tag::getDescription);
     }
 
 }

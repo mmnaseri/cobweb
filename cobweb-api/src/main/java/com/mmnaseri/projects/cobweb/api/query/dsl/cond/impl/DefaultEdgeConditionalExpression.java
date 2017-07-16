@@ -3,12 +3,12 @@ package com.mmnaseri.projects.cobweb.api.query.dsl.cond.impl;
 import com.mmnaseri.projects.cobweb.api.query.dsl.ConditionalExpression;
 import com.mmnaseri.projects.cobweb.api.query.dsl.ValueReader;
 import com.mmnaseri.projects.cobweb.api.query.dsl.cond.EdgeConditionalExpression;
+import com.mmnaseri.projects.cobweb.api.query.meta.Conditional;
 import com.mmnaseri.projects.cobweb.domain.content.Edge;
 import com.mmnaseri.projects.cobweb.domain.content.Vertex;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * @author Mohammad Milad Naseri (mmnaseri@programmer.net)
@@ -25,8 +25,13 @@ public class DefaultEdgeConditionalExpression<K extends Serializable & Comparabl
     }
 
     @Override
-    public ConditionalExpression<K, P> matches(Predicate<Edge<K>> predicate) {
-        return setConditional(subject + " matches (predicate)", value -> valueReader.read(value).stream().anyMatch(predicate));
+    public ConditionalExpression<K, P> anyMatches(Conditional<Edge<K>> predicate) {
+        return setConditional(subject + " has any where {" + predicate + "}", value -> valueReader.read(value).stream().anyMatch(predicate::test));
+    }
+
+    @Override
+    public ConditionalExpression<K, P> anyMatches(ConditionalExpression<K, Edge<K>> expression) {
+        return anyMatches(expression.getConditional());
     }
 
 }
