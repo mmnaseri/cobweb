@@ -20,5 +20,9 @@ public final class EdgeConditionals {
         return new DefaultVertexConditionalExpression<>("from", Edge::getFrom);
     }
 
+    public static <K extends Serializable & Comparable<K>, P extends Edge<K>> VertexConditionalExpression<K, P> toVertex(Sources<K, P> sources) {
+        return new DefaultVertexConditionalExpression<>("to", Edge::getTo);
+    }
+
 
 }

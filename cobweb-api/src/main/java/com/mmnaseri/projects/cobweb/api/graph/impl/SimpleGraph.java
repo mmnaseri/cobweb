@@ -253,7 +253,10 @@ public class SimpleGraph<K extends Serializable & Comparable<K>> implements Grap
 
     @Override
     public <P extends Persistent<K>, R> R findOne(Query<P, R> query) {
-        final List<?> list = query(query, 1, 1, true);
+        final List<?> list = query(query, 0, 1, true);
+        if (list.isEmpty()) {
+            return null;
+        }
         //noinspection unchecked
         return (R) list.get(0);
     }
